@@ -15,11 +15,12 @@ function showContent(content) {
  * ajax提交ActiveForm表单
  * @param formId
  * @param url
+ * @param method
  */
-function ajaxSubmitForm(formId, url) {
+function ajaxSubmitForm(formId, url, method='POST') {
     $.ajax({
         url : url,
-        type : 'POST',
+        type : method,
         async: false,
         data : $(formId).serialize(),
         dataType : 'JSON',

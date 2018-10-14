@@ -912,6 +912,7 @@ var DataTable = {
                     if(oData.final_payment > '0') {
                         html += '<a style="text-decoration:none" onClick="memberOrder.secondModal(\'' + oData.order_number + '\')" href="javascript:;" title="尾款"><i class="fa fa-chain"></i></a>';
                     }
+                        html += '<a style="text-decoration:none" onClick="memberOrder.uploadImage(' + oData.id + ')" href="javascript:;" title="上传图片"><i class="fa fa-upload"></i></a>';
                         html += '<a style="text-decoration:none" onClick="memberOrder.refundModal(' + oData.id + ')" href="javascript:;" title="退款"><i class="fa fa-reply-all"></i></a>';
                     if(oData.order_type == '普通套系') {
                         html += '<a style="text-decoration:none" onClick="memberOrder.planModal(\'' + oData.combo_order_number + '\')" href="javascript:;" title="日历排项"><i class="fa fa fa-wpforms"></i></a>';

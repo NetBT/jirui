@@ -1,4 +1,5 @@
 <?php
+
 namespace backend\controllers;
 
 use backend\models\Member;
@@ -21,6 +22,7 @@ class  MemberOrderController extends CommonController
     private $memberOrderModel;
     private $memberOrderComboModel;
     private $memberOrderDetailModel;
+
     public function __construct($id, $module, array $config = [])
     {
         parent::__construct($id, $module, $config);
@@ -34,6 +36,18 @@ class  MemberOrderController extends CommonController
     public function actionIndex()
     {
         return $this->render("list");
+    }
+
+    public function actionUploadImage()
+    {
+        $submit = Yii::$app->request->post('submit');
+        if (!$submit) {
+            $info = $this->memberOrderModel->getInfo(Yii::$app->request->post('id'));
+            return $this->render('refund', ['info' => $info]);
+        } else {
+            $this->returnJson();
+            return $this->memberOrderModel->refund();
+        }
     }
 
     public function actionGuadan()
@@ -66,13 +80,13 @@ class  MemberOrderController extends CommonController
     {
         $this->layout = 'layer_main';
         $model = new MemberOrder(['scenario' => 'add']);
-        if($model->load(Yii::$app->request->post())){
+        if ($model->load(Yii::$app->request->post())) {
             $this->returnJson();
             return $model->addEdit();
         } else {
             $memberId = intval(Yii::$app->request->get('memberId'));
             $memberInfo = Member::getOneInfoById($memberId);
-            return $this->render("add",['model' => $model,'memberInfo' => $memberInfo]);
+            return $this->render("add", ['model' => $model, 'memberInfo' => $memberInfo]);
         }
     }
 
@@ -111,20 +125,21 @@ class  MemberOrderController extends CommonController
     {
         $this->layout = 'layer_main';
         $model = new MemberOrder(['scenario' => 'edit']);
-        if($model->load(Yii::$app->request->post())){
+        if ($model->load(Yii::$app->request->post())) {
             $this->returnJson();
             return $model->addEdit();
         } else {
             $get = Yii::$app->request->get();
-            $orderstate = isset($get['orderstate'])?$get['orderstate']:'';
+            $orderstate = isset($get['orderstate']) ? $get['orderstate'] : '';
             $model = MemberOrder::findOne(['id' => Yii::$app->request->get('id')]);
             $model->setScenario('edit');
 
             $memberModel = new Member();
-            $name = $memberModel::getInfoByField($model->member_id,'name');
+            $name = $memberModel::getInfoByField($model->member_id, 'name');
             $where['name'] = $name;
             $memberInfo = $memberModel->getMemberInfoByWhere($where);
-            return $this->render("edit",['model' => $model,'member' => $memberInfo['data'],'orderstate' => $orderstate]);
+            return $this->render("edit",
+                ['model' => $model, 'member' => $memberInfo['data'], 'orderstate' => $orderstate]);
         }
     }
 
@@ -136,8 +151,7 @@ class  MemberOrderController extends CommonController
     {
         $type = Yii::$app->request->get('type');
         $model = new MemberOrder(['scenario' => $type]);
-        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post()))
-        {
+        if (Yii::$app->request->isAjax && $model->load(Yii::$app->request->post())) {
             $this->returnJson();
             return ActiveForm::validate($model);
         }
@@ -172,9 +186,9 @@ class  MemberOrderController extends CommonController
     public function actionRefund()
     {
         $submit = Yii::$app->request->post('submit');
-        if(!$submit){
+        if (!$submit) {
             $info = $this->memberOrderModel->getInfo(Yii::$app->request->post('id'));
-            return $this->render('refund',['info' => $info]);
+            return $this->render('refund', ['info' => $info]);
         } else {
             $this->returnJson();
             return $this->memberOrderModel->refund();
@@ -202,17 +216,18 @@ class  MemberOrderController extends CommonController
     public function actionSecond()
     {
         $submit = Yii::$app->request->post('submit');
-        if(!$submit){
+        if (!$submit) {
             $info = $this->memberOrderModel->getInfoByorderID(Yii::$app->request->post('order_number'));
             $weikuan = Yii::$app->request->post('weikuan');
-            return $this->render('second',['info' => $info,'weikuan' => $weikuan]);
+            return $this->render('second', ['info' => $info, 'weikuan' => $weikuan]);
         } else {
             $this->returnJson();
             return $this->memberOrderModel->secondGathering();
         }
     }
 
-    public function actionQuoteOrderInfo() {
+    public function actionQuoteOrderInfo()
+    {
         $model = new MemberOrder();
         $this->returnJson();
         return $model->quoteOrderInfo();
@@ -262,8 +277,10 @@ class  MemberOrderController extends CommonController
         $where['combo_order_number'] = $comboOrderNumber;
         $info = $this->memberOrderComboModel->showOrderComboInfo($where);
         $this->layout = 'layer_main';
-        return $this->render("show_order_combo",['member' => $info['member'],'orderCombo' => $info['orderCombo'],'order' => $info['order']]);
+        return $this->render("show_order_combo",
+            ['member' => $info['member'], 'orderCombo' => $info['orderCombo'], 'order' => $info['order']]);
     }
+
     //查看order_combo列表
     public function actionEditShop()
     {
@@ -275,6 +292,11 @@ class  MemberOrderController extends CommonController
         $goods = new AbGoods();
         $goodArr = $goods->getListData();
         $this->layout = 'layer_main';
-        return $this->render("edit_shop",['member' => $info['member'],'orderCombo' => $info['orderCombo'],'order' => $info['order'],'goodArr' => $goodArr['data']]);
+        return $this->render("edit_shop", [
+            'member' => $info['member'],
+            'orderCombo' => $info['orderCombo'],
+            'order' => $info['order'],
+            'goodArr' => $goodArr['data']
+        ]);
     }
 }

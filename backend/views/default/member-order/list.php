@@ -105,6 +105,7 @@
         addUrl : '<?= \yii\helpers\Url::to(['member-order/add']) ?>',
         editUrl : '<?= \yii\helpers\Url::to(['member-order/edit']) ?>',
         refundUrl : '<?= \yii\helpers\Url::to(['member-order/refund']) ?>',
+        uploadImageUrl : '<?= \yii\helpers\Url::to(['member-order/upload-image']) ?>',
         secondUrl : '<?= \yii\helpers\Url::to(['member-order/second']) ?>',
         planComboUrl : '<?= \yii\helpers\Url::to(['member-order/index-order-combo']) ?>',
         planUrl : '<?= \yii\helpers\Url::to(['calendar-plan/list'])?>',
@@ -144,6 +145,13 @@
                 id : id,
             };
             layer_show(param, '退款', this.refundUrl,780,500);
+        },
+        uploadImage : function(id)
+        {
+            var param = {
+                id : id,
+            };
+            layer_show(param, '上传', this.uploadImageUrl,780,500);
         },
 
         // secondModal : function(id)
