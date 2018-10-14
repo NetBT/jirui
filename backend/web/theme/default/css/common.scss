@@ -1,0 +1,270 @@
+@charset "utf-8";
+
+$pixel: 5 10 15 20 30;
+//预制高度和行高
+$heightSetList: 20 25 30 35 40 45 50 55 60;
+@each $val in $heightSetList {
+    .height-#{$val} {
+        height: #{$val}px !important;
+        line-height: #{$val}px;
+    }
+}
+
+//预制字体大小
+$fontSize: (font-xs: 12px, font-sm: 14px, font-md: 16px, font-lg: 18px, font-jb: 20px, font-30: 30px, font-40: 40px, font-80: 80px);
+@each $fontClassName, $fontSize in $fontSize {
+    .#{$fontClassName} {
+        font-size: $fontSize !important;
+    }
+}
+
+//预制边距类
+$marginSetList: margin-right margin-left margin-bottom margin-top;
+$paddingSetList: padding-right padding-left padding-bottom padding-top;
+@each $val in $pixel {
+    @each $marginClassName in $marginSetList {
+        .#{$marginClassName}-#{$val} {
+            #{$marginClassName} : #{$val}px !important;
+        }
+    }
+    @each $paddingClassName in $paddingSetList {
+        .#{$paddingClassName}-#{$val} {
+            #{$paddingClassName} : #{$val}px !important;
+        }
+    }
+}
+
+.badge {
+    .badge-danger {
+        background: red !important;
+    }
+}
+
+//预制文本颜色
+$textColorList: (
+        text-default :#424244,
+        text-primary :#424244,
+        text-pleasant :#e8614d,
+        text-inverse :#fffbed,
+        text-light :#fffbed,
+        text-dark :#424244,
+        text-passion :#fbd663,
+        text-cool :#16a4aa,
+        text-sun :#f6b81f,
+        text-sunshine :#f6b81f,
+        text-gray :#a2a3a4,
+        text-hot :#d21e1e,
+        text-green :#390,
+        text-pink :#f59192,
+        text-black :#424244,
+        text-blue :#5eaffa,
+        text-orange :#ff7200,
+        text-important :#fc9792,
+        text-info :#0197ad,
+        text-success :#2baab1,
+        text-danger :#e8675d,
+        text-warning :#e8675d,
+);
+@each $textColorClassName, $color in $textColorList {
+    .#{$textColorClassName} {
+        color: $color !important;
+        &:focus, &:hover {
+            color: $color !important;
+        }
+    }
+}
+
+$borderColor: #c9c9c9;
+
+.btn-hot {
+    background: #d21e1e;
+    border-color: #d21e1e;
+    color: #fff;
+    &:hover {
+        color: #fff;
+    }
+}
+//橙色颜色按钮
+.btn-orange {
+    background-color: #f55f1d;
+    border-color: #f55f1d;
+    color: #fff;
+    border-radius: 4px;
+    &:hover {
+        background: #FF581E none repeat scroll 0 0;
+        color: #fff;
+    }
+}//橙色颜色按钮
+.btn-yellow {
+    background-color: #f39800;
+    border-color: #f39800;
+    color: #fff;
+    border-radius: 4px;
+    &:hover {
+        background: #d58000 none repeat scroll 0 0;
+        color: #fff;
+    }
+}
+.btn-transparent {
+    background: white;
+    border-color: white;
+    color: black;
+    &:hover {
+        color: black;
+    }
+    .panel-body {
+        border: 0
+    }
+}
+
+.wrap {
+    min-height: 100%;
+    height: auto;
+    margin: 0 auto -60px;
+    padding: 0 0 60px;
+}
+
+.wrap > .container {
+    padding: 70px 15px 20px;
+}
+
+/* text */
+.text-center {
+    text-align: center !important;
+}
+
+.text-left {
+    text-align: left !important;
+}
+
+.text-right {
+    text-align: right !important;
+}
+
+.font-bold {
+    font-weight: 700 !important;
+}
+
+.inline-block {
+    display: inline-block !important;
+}
+
+.cursor-pointer {
+    cursor: pointer !important;
+}
+
+/* clear */
+.clear-padding-left {
+    padding-left: 0 !important;
+}
+
+.clear-padding-right {
+    padding-right: 0 !important;
+}
+
+.clear-padding {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+
+.clear-margin {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+
+.clear-margin-left {
+    margin-left: 0 !important;
+}
+
+.clear-margin-right {
+    margin-right: 0 !important;
+}
+.clear-margin-top {
+    margin-left: 0 !important;
+}
+
+.clear-margin-bottom {
+    margin-right: 0 !important;
+}
+
+
+
+
+.clearfix {
+    &::after, &::before {
+        content: '';
+        display: table;
+        line-height: 0;
+    }
+    &::after {
+        clear: both;
+    }
+}
+
+.box-center {
+    margin: 0 auto;
+}
+
+//bootstrap-datatable-strap分页样式设置
+.dataTables_paginate {
+    .pagination {
+        > li {
+            margin: 0 6px;
+            >a {
+                padding: 6px 16px;
+                float: none;
+            }
+        }
+        > .active > a {
+            border: 1px solid #e70012;
+            background: #e70012 none repeat scroll 0 0;
+        }
+        .fg-button {
+            margin: 0 6px;
+            .ui-button {
+                .ui-state-default {
+                    .active {
+                        border: 1px solid #e70012;
+                        background: #e70012 none repeat scroll 0 0;
+                    }
+                }
+            }
+        }
+
+    }
+}
+.dataTables_wrapper {
+    .dataTables_length {
+        margin-top: 20px;
+        padding-bottom: 5px;
+    }
+}
+//bootstrap-默认样式设置
+.bootstrap {
+    .pagination {
+        color: black;
+        > li {
+            margin: 0 6px;
+            border: 1px solid #ddd;
+            > a, > span {
+                color: black;
+                padding: 6px 16px;
+                float: none;
+            }
+            &.disabled {
+                a, span {
+                    color: #ddd;
+                }
+            }
+            &.active {
+                a, span {
+                    color: white;
+                    border: 1px solid #e70012;
+                    background: #e70012 none repeat scroll 0 0;
+                }
+            }
+        }
+    }
+}
+
+

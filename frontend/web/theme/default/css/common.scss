@@ -1,0 +1,229 @@
+@charset "utf-8";
+@import "fonts";
+$unit: '%';
+
+$pixel : 5 10 15 20 30 50 60;
+//预制高度和行高
+$heightSetList : 20 25 30 35 40 45 50 55 60;
+@each $val in $heightSetList {
+    .height-#{$val} {
+        height: #{$val}px !important;
+        line-height: #{$val}px;
+    }
+}
+//预制宽度大小
+$widthList : 5 15 20 25 30 35 40 45 50 55 60 65 70 75 80 85 90 95 100;
+@each $width in $widthList {
+    .wid-#{$width} {
+        width: #{$width}#{$unit};
+    }
+}
+//预制字体大小
+$fontSize : (font-xs: 12px, font-sm: 14px, font-md: 16px,font-lg: 18px, font-jb: 20px, font-30: 30px, font-40: 40px, font-80: 80px);
+@each $fontClassName, $fontSize in $fontSize {
+    .#{$fontClassName} {
+        font-size: $fontSize !important;
+    }
+}
+
+//预制边距类
+$marginSetList: margin-right margin-left  margin-bottom margin-top;
+$paddingSetList: padding-right padding-left  padding-bottom padding-top;
+@each $val in $pixel {
+    @each $marginClassName in $marginSetList {
+        .#{$marginClassName}-#{$val} {
+            #{$marginClassName} : #{$val}px !important;
+        }
+    }
+    @each $paddingClassName in $paddingSetList {
+        .#{$paddingClassName}-#{$val} {
+            #{$paddingClassName} : #{$val}px !important;
+        }
+    }
+}
+
+//预制文本颜色
+$textColorList : (
+        text-default    :#424244,
+        text-primary    :#424244,
+        text-pleasant   :#e8614d,
+        text-inverse    :#fffbed,
+        text-light      :#fffbed,
+        text-dark       :#424244,
+        text-passion    :#ecd900,
+        text-cool       :#16a4aa,
+        text-sun        :#f6b81f,
+        text-sunshine   :#f6b81f,
+        text-gray       :#a1a1a1,
+        text-hot        :#d21e1e,
+        text-green      :#390,
+        text-pink       :#f59192,
+        text-black      :#424244,
+        text-blue       :#0099ff,
+        text-orange     :#ed7420,
+        text-important  :#fc9792,
+        text-info       :#0197ad,
+        text-success    :#2baab1,
+        text-danger     :#e8675d,
+        text-warning    :#e8675d,
+        text-deep-blue  :#0f3766,
+        text-error      :#a94442
+);
+@each $textColorClassName, $color in $textColorList {
+    .#{$textColorClassName} {
+        color: $color !important;
+        &:focus, &:hover {
+            color: $color !important;
+        }
+    }
+}
+//预制竖直方向对齐类
+$verticalSetList : middle top sub bottom;
+@each $val in $verticalSetList {
+    .vertical-#{$val} {
+        vertical-align: $val !important;
+    }
+}
+//文本水平对齐方式
+$textAlignList: center left right;
+@each $val in $textAlignList {
+    .text-#{$val} {
+        text-align: $val !important;
+    }
+}
+.btn {
+    border-radius: 2px;
+}
+.btn-hot {
+    background: #d21e1e;
+    border-color: #d21e1e;
+    color: #fff;
+    &:hover{
+        color:#fff;
+    }
+}
+.btn-blue {
+    background: #0099ff;
+    border-color: #0099ff;
+    color: #fff;
+    &:hover{
+        color:#fff;
+        background: #07a5ff;
+    }
+    &.disabled {
+        background:#b1b1b1;
+        border-color: #b1b1b1;
+    }
+}
+.btn-default-blue {
+    background: white;
+    border-color: #0099ff;
+    color: #0099ff;
+    &:hover{
+        color:#fff;
+        background: #07a5ff;
+    }
+}
+
+.badge {
+    &.right-top {
+        position: relative;
+        top: -10px;
+        left: -10px;
+    }
+    &.badge-red {
+        background: red;
+        color: white;
+    }
+}
+.btn-transparent {
+    background: none;
+    border-color: white;
+    color: white;
+    &:hover{
+        color:white;
+    }
+    .panel-body {
+        border:0
+    }
+}
+
+
+.position-unset {
+    position: unset !important;
+}
+li {
+    list-style: none
+}
+
+.table-cell {
+    display: table-cell !important;
+}
+.relative {
+    position: relative;
+}
+.inline-block {
+    display: inline-block !important;
+}
+.cursor-pointer {
+    cursor: pointer !important;
+}
+//清除内外边距
+.clean-padding-left {
+    padding-left: 0 !important;
+}
+.clean-padding-right {
+    padding-right: 0 !important;
+}
+.clean-padding {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+}
+.clean-margin {
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+}
+.clean-margin-left {
+    margin-left: 0 !important;
+}
+.clean-margin-right {
+    margin-right: 0 !important;
+}
+.clearfix{
+    &::after,&::before {
+        content: '';
+        display: table;
+        line-height: 0;
+    }
+    &::after {
+        clear:both;
+    }
+}
+.clean-border {
+    border: none !important;
+}
+.box-center {
+    margin: 0 auto;
+}
+.border-dashed-gray{
+    border-top: 1px dashed #b9b9b9;
+}
+.error {
+    color: #a94442 !important;
+    font-size: 12px;
+    position: absolute;
+    right: 23px;
+    top: 8px;
+}
+.input-hit-in {
+    font-size: 12px;
+    position: absolute;
+    right: 23px;
+    top: 8px;
+}
+label {
+    font-weight: normal;
+}
+.hidden {
+    display: none !important;
+}

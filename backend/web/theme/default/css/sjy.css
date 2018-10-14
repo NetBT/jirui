@@ -1,0 +1,46 @@
+.form-group {
+  display: block; }
+
+input[type="radio"], input[type="checkbox"] {
+  margin-top: 5px; }
+
+.form-horizontal .radio, .form-horizontal .checkbox, .form-horizontal .radio-inline, .form-horizontal .checkbox-inline {
+  padding-top: 6px; }
+
+.td-icon {
+  text-align: center; }
+  .td-icon a {
+    text-align: center;
+    border-radius: 50%;
+    display: inline-block;
+    line-height: 32px;
+    font-size: 16px;
+    width: 32px;
+    height: 32px;
+    vertical-align: middle;
+    color: #c09493; }
+    .td-icon a i {
+      color: #c09493;
+      line-height: 32px; }
+    .td-icon a img {
+      width: 20px;
+      height: 20px;
+      margin: 0 auto;
+      position: relative;
+      top: 6px; }
+    .td-icon a:hover {
+      background-color: #f7f3ed; }
+
+.btn-default {
+  background: #fff; }
+
+.page-container {
+  padding-bottom: 30px; }
+
+button, input {
+  border-radius: 4px; }
+
+.yggl_top_input label {
+  font-weight: normal; }
+
+/*# sourceMappingURL=sjy.css.map */

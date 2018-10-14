@@ -1,0 +1,126 @@
+
+<html xmlns:o="urn:schemas-microsoft-com:office:office" xmlns:w="urn:schemas-microsoft-com:office:word" xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<xml><w:WordDocument><w:View>Print</w:View></xml>
+</head><body>
+        <h1 style="text-align: center">我想求职一份摄影师工作</h1>
+        <!--        <h3>编号：000001</h3>-->
+        <table cellspacing="0" cellpadding="3" border="1">
+            <tbody><tr>
+                <td colspan="2" width="93" valign="center">姓名</td>
+                <td colspan="2" width="160" valign="center">周冬雨</td>
+                <td colspan="2" width="93" valign="center">性别</td>
+                <td colspan="2" width="72" valign="center">未知</td>
+                <td colspan="2" width="88" valign="center">年龄</td>
+                <td colspan="3" width="89" valign="center">19</td>
+
+                <!--               <td width="125" colspan="2" rowspan="4" align="center" valign="middle" ></td>-->
+            </tr>
+            <tr>
+                <td colspan="2" width="88" valign="center">民族</td>
+                <td colspan="2" width="89" valign="center">未知</td>
+                <td colspan="2" width="68" valign="center">学历</td>
+                <td colspan="2" width="87" valign="center">不限</td>
+                <td colspan="2" width="89" valign="center">毕业院校</td>
+                <td colspan="3" width="156" valign="center">未知</td>
+            </tr>
+            <tr>
+                <td colspan="2" width="93" valign="center">婚姻</td>
+                <td colspan="2" width="72" valign="center">未知</td>
+
+                <td colspan="2" width="68" valign="center">婚姻状况</td>
+                <td colspan="2" width="87" valign="center">xxx</td>
+                <td colspan="2" width="88" valign="center"></td>
+                <td colspan="3" width="89" valign="center"></td>
+            </tr>
+            <tr>
+                <td colspan="2" width="93" valign="center">手机</td>
+                <td colspan="2" width="160" valign="center">12312312123</td>
+                <td colspan="2" width="89" valign="center">Email</td>
+                <td colspan="2" width="156" valign="center">未知</td>
+                <td colspan="2" width="89" valign="center">微信</td>
+                <td colspan="3" width="156" valign="center">未知</td>
+            </tr>
+
+            <tr>
+                <td colspan="2" style="width:93px;" width="93" valign="center">籍贯</td>
+                <td colspan="11" width="530" valign="center">未知</td>
+            </tr>
+
+            <tr>
+                <td colspan="2" style="width:93px;" width="93" valign="center">家庭住址</td>
+                <td colspan="11" width="530" valign="center">未知</td>
+            </tr>
+            <tr>
+                <td colspan="2" rowspan="3" width="93" valign="center">求职意向</td>
+                <td colspan="2" width="93" valign="center">工作年限</td>
+                <td colspan="9" width="200" valign="center">1-2年</td>
+
+            </tr>
+            <tr>
+                <td colspan="2" width="93" valign="center">希望薪资</td>
+                <td colspan="9" width="200" valign="center">3000-5000元/月</td>
+
+            </tr>
+            <tr>
+                <td colspan="2" width="93" valign="center">目前状况</td>
+                <td colspan="9" width="200" valign="center">离职</td>
+            </tr>
+
+                            <tr>
+                    <td colspan="2" rowspan="6" width="93" valign="center">教育经历</td>
+                    <td colspan="3" width="93" valign="center">毕业时间</td>
+                    <td colspan="4" width="93" valign="center">学校名称</td>
+                    <td colspan="4" width="93" valign="center">专业</td>
+                </tr>
+                                    <tr>
+                        <td colspan="3" width="93" valign="center">2018/05</td>
+                        <td colspan="4" width="93" valign="center">清华附属中学</td>
+                        <td colspan="4" width="93" valign="center">学生</td>
+                    </tr>
+                                    <tr>
+                        <td colspan="3" width="93" valign="center">2018/06</td>
+                        <td colspan="4" width="93" valign="center">清华大学1</td>
+                        <td colspan="4" width="93" valign="center">书序</td>
+                    </tr>
+                                    <tr>
+                        <td colspan="3" width="93" valign="center">2018/06</td>
+                        <td colspan="4" width="93" valign="center">北京大学1</td>
+                        <td colspan="4" width="93" valign="center">数学</td>
+                    </tr>
+                                    <tr>
+                        <td colspan="3" width="93" valign="center">2018/06</td>
+                        <td colspan="4" width="93" valign="center">清华2</td>
+                        <td colspan="4" width="93" valign="center">321</td>
+                    </tr>
+                                    <tr>
+                        <td colspan="3" width="93" valign="center">2018/06</td>
+                        <td colspan="4" width="93" valign="center">清华负数12</td>
+                        <td colspan="4" width="93" valign="center">负数</td>
+                    </tr>
+                            
+                            <tr>
+                    <td colspan="2" rowspan="3" width="93" valign="center">工作经历</td>
+                    <td colspan="3" width="93" valign="center">工作时间</td>
+                    <td colspan="4" width="93" valign="center">公司名称</td>
+                    <td colspan="4" width="93" valign="center">职位</td>
+                </tr>
+                                    <tr>
+                        <td colspan="3" width="93" valign="center">2018/06-2018/06</td>
+                        <td colspan="4" width="93" valign="center">你好</td>
+                        <td colspan="4" width="93" valign="center">不好</td>
+                    </tr>
+                                    <tr>
+                        <td colspan="3" width="93" valign="center">2018/06-2018/06</td>
+                        <td colspan="4" width="93" valign="center">文体台1</td>
+                        <td colspan="4" width="93" valign="center">php</td>
+                    </tr>
+                            
+
+            <tr>
+                <td width="93" valign="center">自我评价</td>
+                <td colspan="12" width="570" valign="center">123</td>
+            </tr>
+        </tbody></table>
+    </body></html>
