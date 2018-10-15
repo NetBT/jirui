@@ -40,14 +40,13 @@ class  MemberOrderController extends CommonController
 
     public function actionUploadImage()
     {
-        $submit = Yii::$app->request->post('submit');
-        if (!$submit) {
-            $info = $this->memberOrderModel->getInfo(Yii::$app->request->post('id'));
-            return $this->render('refund', ['info' => $info]);
-        } else {
-            $this->returnJson();
-            return $this->memberOrderModel->refund();
-        }
+        $info = $this->memberOrderModel->getInfo(Yii::$app->request->post('id'));
+        return $this->render('upload_image', ['info' => $info]);
+    }
+
+    public function actionReceiveImage(){
+        $file = Yii::$app->request->post('file');
+
     }
 
     public function actionGuadan()
