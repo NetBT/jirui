@@ -5,12 +5,13 @@ namespace backend\models;
 use Yii;
 use yii\base\Exception;
 use common\models\Functions;
+use yii\web\UploadedFile;
 
 class MemberOrderImage extends Common
 {
-    public $uploadedImage;
-    private $fieldArray = [
-        "id",
+    public $imageFile;
+    public $attributeLabels = [
+        'id',
         'member_order_id',
         'path',
         'type',
@@ -37,6 +38,7 @@ class MemberOrderImage extends Common
                     'size',
                     'created_at',
                     'updated_at',
+                    'imageFile',
                 ],
                 'required',
             ],
@@ -52,34 +54,55 @@ class MemberOrderImage extends Common
             ['size', 'integer'],
             ['member_order_id', 'integer'],
             ['member_order_id', 'integer'],
-            [['uploadedImage'], 'file', 'skipOnEmpty' => false, 'extensions' => 'jpg,png,svg,jpeg,gif'],
+            [['imageFile'], 'file', 'skipOnEmpty' => false, 'extensions' => 'jpg,png,svg,jpeg,gif'],
         ];
     }
 
     public function uploadImage()
     {
+        $transaction = Yii::$app->db->beginTransaction();
         try {
-            $res = Functions::uploadFile('file');
+            $this->imageFile = UploadedFile::getInstanceByName('file');
             $id = Yii::$app->request->get('order_id');
-            if ($res === false) {
-                throw new \Exception(false);
-            }
             if (!empty($id)) {
                 $data['member_order_id'] = $id;
-                $path_info = pathinfo($res);
-                $data['path'] = $path_info['dirname'];
-                $data['filename'] = $path_info['basename'];
-                $data['type'] = $path_info['extension'];
-                if (!($this->load($data) && $this->save())) {
-                    throw new \Exception(array_shift($this->firstErrors));
+                $data['path'] = rtrim(Yii::$app->params['member_order_image_path'], '/') . '/' . $id . '/';
+                $data['filename'] = md5($id . time() . rand(10000, 99999)) . '.' . $this->imageFile->extension;
+                $data['type'] = $this->imageFile->type;
+                $data['size'] = $this->imageFile->size;
+                if ($this->load($data, '') && $this->save()) {
+                    if (!$this->imageFile->saveAs($this->getPath())) {
+                        throw new Exception($this->imageFile->error);
+                    }
+                } else {
+                    throw new Exception(array_shift($this->firstErrors));
                 }
             } else {
-                throw new \Exception(false);
+                throw new Exception('Order_id is required!');
             }
-            return Functions::formatJson(1000, '上传成功', $res);
+            $transaction->commit();
+            return Functions::formatJson(1000, '上传成功', $this->getImageUrl());
         } catch (Exception $e) {
+            $transaction->rollBack();
             return Functions::formatJson(2000, $e->getMessage());
         }
     }
 
+    public function getPath()
+    {
+        $path = '';
+        if (!$this->isNewRecord) {
+            $path = $this->path . $this->filename;
+        }
+        return $path;
+    }
+
+    public function getImageUrl()
+    {
+        $url = '';
+        if (!$this->isNewRecord) {
+            $url = $this->path . $this->filename;
+        }
+        return $url;
+    }
 }

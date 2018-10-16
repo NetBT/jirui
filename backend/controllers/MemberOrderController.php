@@ -6,9 +6,8 @@ use backend\models\Member;
 use backend\models\MemberOrder;
 use backend\models\MemberOrderCombo;
 use backend\models\MemberOrderDetail;
-use common\models\Status;
+use backend\models\MemberOrderImage;
 use Yii;
-use yii\base\Exception;
 use yii\bootstrap\ActiveForm;
 use backend\models\AbGoods;
 
@@ -45,8 +44,9 @@ class  MemberOrderController extends CommonController
     }
 
     public function actionReceiveImage(){
-        $file = Yii::$app->request->post('file');
-
+        $model = new MemberOrderImage();
+        $this->returnJson();
+        return $model->uploadImage();
     }
 
     public function actionGuadan()

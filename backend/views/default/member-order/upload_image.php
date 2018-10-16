@@ -13,13 +13,13 @@
         addRemoveLinks: true,
         dictRemoveFile: "删除",
         dictDefaultMessage: "请点击上传，或拖拽图片到这个区域（支持jpg,png,svg,jpeg,gif）",
-        acceptedFiles: "jpg,png,svg,jpeg,gif",
+        acceptedFiles: ".jpg,.png,.svg,.jpeg,.gif",
         autoProcessQueue: true
     };
-    var myDropzone = new Dropzone("#upload-image", {url: "<?= \yii\helpers\Url::to(['member-order/upload-image'])?>"});
+    var myDropzone = new Dropzone("#upload-image", {url: "<?= \yii\helpers\Url::to(['member-order/receive-image','order_id'=>$info['order']['id']])?>"});
 
     function save() {
-        ajaxSubmitForm('#upload-image', '<?= \yii\helpers\Url::to(['member-order/upload-image'])?>');
+        ajaxSubmitForm('#upload-image', '<?= \yii\helpers\Url::to(['member-order/upload-image','order_id'=>$info['order']['id']])?>');
     }
 
 
