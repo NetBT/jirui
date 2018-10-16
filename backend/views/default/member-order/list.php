@@ -151,7 +151,7 @@
             var param = {
                 id : id,
             };
-            layer_show(param, '上传', this.uploadImageUrl,780,500);
+            layer_show(param, '上传图片', this.uploadImageUrl,780,500);
         },
 
         // secondModal : function(id)
