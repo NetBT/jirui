@@ -5,13 +5,14 @@ namespace backend\models;
 use Yii;
 use yii\base\Exception;
 use common\models\Functions;
+use yii\behaviors\TimestampBehavior;
+use yii\db\ActiveRecord;
 use yii\web\UploadedFile;
 
 class MemberOrderImage extends Common
 {
     public $imageFile;
     public $attributeLabels = [
-        'id',
         'member_order_id',
         'path',
         'type',
@@ -20,6 +21,19 @@ class MemberOrderImage extends Common
         'created_at',
         'updated_at',
     ];
+
+    public function behaviors()
+    {
+        return [
+            [
+                'class' => TimestampBehavior::className(),
+                'attributes' => [
+                    ActiveRecord::EVENT_BEFORE_INSERT => ['created_at', 'updated_at'],
+                    ActiveRecord::EVENT_BEFORE_UPDATE => ['updated_at'],
+                ],
+            ],
+        ];
+    }
 
     public static function tableName()
     {
@@ -36,8 +50,6 @@ class MemberOrderImage extends Common
                     'type',
                     'filename',
                     'size',
-                    'created_at',
-                    'updated_at',
                     'imageFile',
                 ],
                 'required',
@@ -53,8 +65,7 @@ class MemberOrderImage extends Common
 
             ['size', 'integer'],
             ['member_order_id', 'integer'],
-            ['member_order_id', 'integer'],
-            [['imageFile'], 'file', 'skipOnEmpty' => false, 'extensions' => 'jpg,png,svg,jpeg,gif'],
+            [['imageFile'], 'file', 'skipOnEmpty' => false, 'extensions' => 'jpg, png, svg, jpeg, gif'],
         ];
     }
 
@@ -70,9 +81,15 @@ class MemberOrderImage extends Common
                 $data['filename'] = md5($id . time() . rand(10000, 99999)) . '.' . $this->imageFile->extension;
                 $data['type'] = $this->imageFile->type;
                 $data['size'] = $this->imageFile->size;
-                if ($this->load($data, '') && $this->save()) {
+                $this->load($data, '');
+                if ($this->validate()) {
+                    $path = $this->getPath();
+                    Functions::mkdirs(dirname($path));
                     if (!$this->imageFile->saveAs($this->getPath())) {
                         throw new Exception($this->imageFile->error);
+                    }
+                    if (!$this->save(false)) {
+                        throw new Exception(array_shift($this->firstErrors));
                     }
                 } else {
                     throw new Exception(array_shift($this->firstErrors));
@@ -81,7 +98,7 @@ class MemberOrderImage extends Common
                 throw new Exception('Order_id is required!');
             }
             $transaction->commit();
-            return Functions::formatJson(1000, '上传成功', $this->getImageUrl());
+            return Functions::formatJson(1000, '上传成功', $this->id);
         } catch (Exception $e) {
             $transaction->rollBack();
             return Functions::formatJson(2000, $e->getMessage());
@@ -90,11 +107,7 @@ class MemberOrderImage extends Common
 
     public function getPath()
     {
-        $path = '';
-        if (!$this->isNewRecord) {
-            $path = $this->path . $this->filename;
-        }
-        return $path;
+        return Yii::getAlias('@webroot/' . $this->path . $this->filename);
     }
 
     public function getImageUrl()
