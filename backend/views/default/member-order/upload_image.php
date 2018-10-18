@@ -1,4 +1,9 @@
-<? \backend\assets\DropZoneAsset::register($this); ?>
+<?
+/**
+ * @var $memberOrder \backend\models\MemberOrder
+ */
+\backend\assets\DropZoneAsset::register($this);
+?>
 <article class="page-container">
     <div id="upload-image" class="dropzone"></div>
     <div class="col-xs-12 col-sm-12 cl text-center margin-top-20 margin-bottom-10">
@@ -13,9 +18,15 @@
         addRemoveLinks: true,
         dictDefaultMessage: "请点击上传，或拖拽图片到这个区域（支持jpg,png,svg,jpeg,gif）",
         acceptedFiles: ".jpg,.png,.svg,.jpeg,.gif",
-        autoProcessQueue: false
+        autoProcessQueue: false,
+        maxFiles:<?= $memberOrder->getRegisterCount()?>,
     };
-    var myDropzone = new Dropzone("#upload-image", {url: "<?= \yii\helpers\Url::to(['member-order/receive-image','order_id'=>$info['order']['id']])?>"});
+    var myDropzone = new Dropzone("#upload-image", {
+        url: "<?= \yii\helpers\Url::to([
+            'member-order/receive-image',
+            'order_id' => $info['order']['id']
+        ])?>"
+    });
 
     function save() {
         myDropzone.processQueue();

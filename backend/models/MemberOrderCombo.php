@@ -1,4 +1,5 @@
 <?php
+
 namespace backend\models;
 
 use common\models\Status;
@@ -14,6 +15,7 @@ class MemberOrderCombo extends Common
         "order_number",         //总订单编号
         "combo_order_number",   //套系订单编号
         "combo_name",           //套系名称
+        "combo_id",             //套系ID
         "price",                //价格
         "discount",             //折扣
         "integral",             //积分
@@ -34,8 +36,6 @@ class MemberOrderCombo extends Common
         "take_park_time",       //取件时间
     ];
 
-    public $combo_id;
-
     public static function tableName()
     {
         return '{{%ab_member_order_combo}}';
@@ -47,7 +47,8 @@ class MemberOrderCombo extends Common
      * 获取字段
      * @return array
      */
-    private function _getFields() {
+    private function _getFields()
+    {
         return $this->fieldArray;
     }
 
@@ -60,10 +61,10 @@ class MemberOrderCombo extends Common
             "data" => null
         ];
         //搜索条件
-        $searchWhere  = $this->getSearch(Yii::$app->request->post('extra_search'),$type);//自定义搜索条件
+        $searchWhere = $this->getSearch(Yii::$app->request->post('extra_search'), $type);//自定义搜索条件
 
         //得到文章的总数（但是还没有从数据库取数据）
-        if(isset($searchWhere['andWhere'])){
+        if (isset($searchWhere['andWhere'])) {
             $count = self::getCountByAndWhere($searchWhere['where'], $searchWhere['andWhere']);
         } else {
             $count = self::getCountByWhere($searchWhere);
@@ -75,19 +76,20 @@ class MemberOrderCombo extends Common
 
         $selectField = "";
         $fields = $this->_getFields();
-        foreach($fields as $key => $value)
-        {
-            $selectField .= ",".$value;
+        foreach ($fields as $key => $value) {
+            $selectField .= "," . $value;
         }
-        $selectField = ltrim($selectField,',');
+        $selectField = ltrim($selectField, ',');
 
         //排序 order
         $orderSql = $this->_Pagination['order'] ? $this->_Pagination['order'] : 'id ASC';
 
-        if(isset($searchWhere['andWhere'])){
-            $returnData['data'] = static::getByAndWhere($searchWhere['where'],$searchWhere['andWhere'], $selectField, $orderSql, $this->_Pagination['offset'], $this->_Pagination['limit']);
+        if (isset($searchWhere['andWhere'])) {
+            $returnData['data'] = static::getByAndWhere($searchWhere['where'], $searchWhere['andWhere'], $selectField,
+                $orderSql, $this->_Pagination['offset'], $this->_Pagination['limit']);
         } else {
-            $returnData['data'] = static::getByWhere($searchWhere, $selectField, $orderSql, $this->_Pagination['offset'], $this->_Pagination['limit']);
+            $returnData['data'] = static::getByWhere($searchWhere, $selectField, $orderSql,
+                $this->_Pagination['offset'], $this->_Pagination['limit']);
         }
         return $returnData;
     }
@@ -99,21 +101,27 @@ class MemberOrderCombo extends Common
      * @param string $type
      * @return array
      */
-    public function getSearch ($search = [], $type = '')
+    public function getSearch($search = [], $type = '')
     {
         $where = [];
         $andWhere = [];
-        if($type){
-            switch ($type){
+        if ($type) {
+            switch ($type) {
                 case Status::MEMBER_ORDER_COMBO_NOT_SHOOT://未拍摄
-                    $where['shoot_status'] = [Status::MEMBER_ORDER_SHOOT_STATUS_NO,Status::MEMBER_ORDER_SHOOT_STATUS_ING];
+                    $where['shoot_status'] = [
+                        Status::MEMBER_ORDER_SHOOT_STATUS_NO,
+                        Status::MEMBER_ORDER_SHOOT_STATUS_ING
+                    ];
                     break;
                 case Status::MEMBER_ORDER_COMBO_NOT_SHOOT_FINISHED:
                     $where['shoot_status'] = Status::MEMBER_ORDER_SHOOT_STATUS_NOT_FINISH;
                     break;
                 case Status::MEMBER_ORDER_COMBO_NOT_SELECT://未选片
                     $where['shoot_status'] = Status::MEMBER_ORDER_SHOOT_STATUS_YES;
-                    $where['select_status'] = [Status::MEMBER_ORDER_SELECT_STATUS_NO,Status::MEMBER_ORDER_SELECT_STATUS_ING];
+                    $where['select_status'] = [
+                        Status::MEMBER_ORDER_SELECT_STATUS_NO,
+                        Status::MEMBER_ORDER_SELECT_STATUS_ING
+                    ];
                     break;
                 case Status::MEMBER_ORDER_COMBO_NOT_COMPOSITE://未后期
                     $where['select_status'] = Status::MEMBER_ORDER_SELECT_STATUS_YES;
@@ -130,24 +138,24 @@ class MemberOrderCombo extends Common
             }
 
         }
-        if(!empty($search)){
+        if (!empty($search)) {
             $orderNumber = isset($search['orderNumber']) ? $search['orderNumber'] : '';
             $orderComboNumber = isset($search['orderComboNumber']) ? $search['orderComboNumber'] : '';
             $memberName = isset($search['memberName']) ? $search['memberName'] : '';
-            if($orderNumber){
+            if ($orderNumber) {
                 //总订单的订单编码
                 $where['order_number'] = $orderNumber;
             }
-            if($orderComboNumber){
+            if ($orderComboNumber) {
                 //order_combo的订单编码
                 $where['combo_order_number'] = $orderComboNumber;
             }
 
-            if($memberName) {
+            if ($memberName) {
                 $memberIdArray = [];
                 $memberId = Member::getByWhere(['name' => $memberName]);
                 foreach ($memberId as $key => $value) {
-                    array_push($memberIdArray,$value['id']);
+                    array_push($memberIdArray, $value['id']);
                 }
                 $where['member_id'] = $memberIdArray;
             }
@@ -165,11 +173,11 @@ class MemberOrderCombo extends Common
      */
     public function handelInit($list = [])
     {
-        $memberInfo = Member::getFormArray(['business_id' => Common::getBusinessId()],'id','name');
-        $employeeInfo = Employee::getFormArray(['alliance_business_id' => Common::getBusinessId()],'id','employee_name');
-        $orderInfo = MemberOrder::getFormArray(['business_id' => Common::getBusinessId()],'order_number','member_id');
-        foreach($list['data'] as $key => $value)
-        {
+        $memberInfo = Member::getFormArray(['business_id' => Common::getBusinessId()], 'id', 'name');
+        $employeeInfo = Employee::getFormArray(['alliance_business_id' => Common::getBusinessId()], 'id',
+            'employee_name');
+        $orderInfo = MemberOrder::getFormArray(['business_id' => Common::getBusinessId()], 'order_number', 'member_id');
+        foreach ($list['data'] as $key => $value) {
             $list['data'][$key]['member_name'] = $memberInfo[$orderInfo[$value['order_number']]];
             $list['data'][$key]['plan_status'] = Status::memberOrderComboPlanStatusMap()[$value['plan_status']];
             $list['data'][$key]['shoot_status'] = Status::memberOrderComboShootStatusMap()[$value['shoot_status']];
@@ -177,10 +185,15 @@ class MemberOrderCombo extends Common
             $list['data'][$key]['composite_status'] = Status::memberOrderComboCompositeStatusMap()[$value['composite_status']];
             $list['data'][$key]['deal_status'] = Status::memberOrderComboDealStatusMap()[$value['deal_status']];
             $list['data'][$key]['take_park_status'] = Status::memberOrderComboTakeParkStatusMap()[$value['take_park_status']];
-            $list['data'][$key]['create_time'] = date('Y-m-d',strtotime($value['create_time'])).'</br>'.date('H:i:s',strtotime($value['create_time']));
-            $list['data'][$key]['shoot_finish_time'] = $value['shoot_finish_time'] ? date('Y-m-d',strtotime($value['shoot_finish_time'])).'</br>'.date('H:i:s',strtotime($value['shoot_finish_time'])) : '--';
-            $list['data'][$key]['select_time'] = date('Y-m-d',strtotime($value['select_time'])).'</br>'.date('H:i:s',strtotime($value['select_time']));
-            $list['data'][$key]['take_park_time'] = date('Y-m-d',strtotime($value['take_park_time'])).'</br>'.date('H:i:s',strtotime($value['take_park_time']));
+            $list['data'][$key]['create_time'] = date('Y-m-d',
+                    strtotime($value['create_time'])) . '</br>' . date('H:i:s', strtotime($value['create_time']));
+            $list['data'][$key]['shoot_finish_time'] = $value['shoot_finish_time'] ? date('Y-m-d',
+                    strtotime($value['shoot_finish_time'])) . '</br>' . date('H:i:s',
+                    strtotime($value['shoot_finish_time'])) : '--';
+            $list['data'][$key]['select_time'] = date('Y-m-d',
+                    strtotime($value['select_time'])) . '</br>' . date('H:i:s', strtotime($value['select_time']));
+            $list['data'][$key]['take_park_time'] = date('Y-m-d',
+                    strtotime($value['take_park_time'])) . '</br>' . date('H:i:s', strtotime($value['take_park_time']));
 
 
             $list['data'][$key]['shoot_user'] = $value['shoot_user'] ? $employeeInfo[$value['shoot_user']] : '';
@@ -200,19 +213,19 @@ class MemberOrderCombo extends Common
     {
         $num = '';
         do {
-            $num = date('YmdHi').rand(100,999).'MOC'.Common::getBusinessId();
+            $num = date('YmdHi') . rand(100, 999) . 'MOC' . Common::getBusinessId();
             $res = static::getOneByWhere(['combo_order_number' => $num]);
-        } while(!empty($res));
+        } while (!empty($res));
         return $num;
     }
 
     public function getInfo($id = 0)
     {
         //获取会员信息
-        $memberOrderInfo = self::getOneInfoById($id,'order_number,member_id,price,number,id,member_id');
+        $memberOrderInfo = self::getOneInfoById($id, 'order_number,member_id,price,number,id,member_id');
 
         //获取订单信息
-        $memberInfo = Member::getOneInfoById($memberOrderInfo['member_id'],'name,integral,valid_money');
+        $memberInfo = Member::getOneInfoById($memberOrderInfo['member_id'], 'name,integral,valid_money');
         $info = [
             'order' => $memberOrderInfo,
             'member' => $memberInfo,
@@ -232,15 +245,15 @@ class MemberOrderCombo extends Common
         $orderData = $memberData = [];
         $trans = Yii::$app->db->beginTransaction();
         try {
-            if(!$memberId) {
+            if (!$memberId) {
                 throw new Exception('未找到用户');
             }
 
-            if(!$orderId) {
+            if (!$orderId) {
                 throw new Exception('未找到订单');
             }
-            $memberOrderInfo = self::getOneInfoById($orderId,'price');
-            if($post['refund_money'] > $memberOrderInfo['price']) {
+            $memberOrderInfo = self::getOneInfoById($orderId, 'price');
+            if ($post['refund_money'] > $memberOrderInfo['price']) {
                 throw new Exception('退款金额不能大于订单金额');
             }
 
@@ -250,18 +263,18 @@ class MemberOrderCombo extends Common
             $orderData['refund_type'] = $type;
             $orderData['refund_time'] = date('Y-m-d H:i:s');
 
-            $memberInfo = Member::getOneInfoById($memberId,'integral,valid_money,total_consume');
+            $memberInfo = Member::getOneInfoById($memberId, 'integral,valid_money,total_consume');
             $memberData['integral'] = $memberInfo['integral'] - $post['refund_integral'];
             $memberData['total_consume'] = $memberInfo['total_consume'] - $post['refund_money'];
-            if($type == Status::MEMBER_ORDER_REFUND_TYPE_VALID_MONEY){
+            if ($type == Status::MEMBER_ORDER_REFUND_TYPE_VALID_MONEY) {
                 $memberData['valid_money'] = $memberInfo['valid_money'] + $post['refund_money'];
             }
-            $res = static::updateDataWithLog($orderData,['id' => $orderId]);
+            $res = static::updateDataWithLog($orderData, ['id' => $orderId]);
             if ($res === false) {
                 throw new Exception('订单退款失败');
             }
             $memberModel = new Member();
-            $res = $memberModel->updateDataWithLog($memberData,['id' => $memberId]);
+            $res = $memberModel->updateDataWithLog($memberData, ['id' => $memberId]);
             if ($res === false) {
                 throw new Exception('会员退款失败');
             }
@@ -286,20 +299,20 @@ class MemberOrderCombo extends Common
         $orderSecondData = $memberData = [];
         $trans = Yii::$app->db->beginTransaction();
         try {
-            if(!$memberId) {
+            if (!$memberId) {
                 throw new Exception('未找到用户');
             }
 
-            if(!$orderId) {
+            if (!$orderId) {
                 throw new Exception('未找到订单');
             }
 
             //用户表更新总消费
-            $memberInfo = Member::getOneInfoById($memberId,'total_consume');
+            $memberInfo = Member::getOneInfoById($memberId, 'total_consume');
             $memberData['total_consume'] = $memberInfo['total_consume'] + $post['second_money'];
             $memberData['update_time'] = date('Y-m-d H:i:s');
             $memberModel = new Member();
-            $res = $memberModel->updateDataWithLog($memberData,['id' => $memberId]);
+            $res = $memberModel->updateDataWithLog($memberData, ['id' => $memberId]);
             if ($res === false) {
                 throw new Exception('收款失败');
             }
@@ -339,13 +352,16 @@ class MemberOrderCombo extends Common
         $type = intval($post['type']);
         $afterStatus = intval($post['afterStatus']);
         $beforeStatus = intval($post['beforeStatus']);
-        $employeeInfo = Employee::getFormArray(['status' => Status::EMPLOYEE_STATUS_ACTIVE,'alliance_business_id' => Common::getBusinessId()],'id','employee_name');
-        try{
-            if(!$type) {
+        $employeeInfo = Employee::getFormArray([
+            'status' => Status::EMPLOYEE_STATUS_ACTIVE,
+            'alliance_business_id' => Common::getBusinessId()
+        ], 'id', 'employee_name');
+        try {
+            if (!$type) {
                 throw new Exception('未指定类型');
             }
 
-            if(!$comboOrderNumber) {
+            if (!$comboOrderNumber) {
                 throw new Exception('未指定订单');
             }
 
@@ -358,23 +374,23 @@ class MemberOrderCombo extends Common
             $selectPhoneUserName = !empty($selectPhoneUser) ? $employeeInfo[$selectPhoneUser] : '';
             $compositeUser = $currentInfo['composite_user'];
             $compositeUserName = !empty($compositeUser) ? $employeeInfo[$compositeUser] : '';
-            switch ($type){
+            switch ($type) {
                 case Status::MEMBER_ORDER_COMBO_NOT_SHOOT://拍摄
                     //未排项的不能进行拍摄
-                    if($currentInfo['plan_status'] == Status::MEMBER_ORDER_PLAN_STATUS_NO) {
+                    if ($currentInfo['plan_status'] == Status::MEMBER_ORDER_PLAN_STATUS_NO) {
                         throw new Exception('该订单未排项，请先排项在进行拍摄');
                     }
 
                     //判断是否是同一个员工操作
-                    if(!empty($shootUser) && ($shootUser != Yii::$app->user->getId())) {
-                        throw new Exception('该订单只由'.$shootUserName.'操作');
+                    if (!empty($shootUser) && ($shootUser != Yii::$app->user->getId())) {
+                        throw new Exception('该订单只由' . $shootUserName . '操作');
                     }
                     $data['shoot_status'] = $afterStatus;
-                    if($afterStatus == Status::MEMBER_ORDER_SHOOT_STATUS_YES) {
+                    if ($afterStatus == Status::MEMBER_ORDER_SHOOT_STATUS_YES) {
                         $data['shoot_finish_time'] = date('Y-m-d H:i:s');
                     }
                     $data['shoot_user'] = Yii::$app->user->getId();
-                    $res = static::updateDataWithLog($data,$where);
+                    $res = static::updateDataWithLog($data, $where);
                     if ($res === false) {
                         throw new Exception('操作失败');
                     }
@@ -383,15 +399,15 @@ class MemberOrderCombo extends Common
                 //选片
                 case Status::MEMBER_ORDER_COMBO_NOT_SELECT:
                     //判断是否是同一个员工操作
-                    if(!empty($selectPhoneUser) && ($selectPhoneUser != Yii::$app->user->getId())) {
-                        throw new Exception('该订单只由'.$selectPhoneUserName.'操作');
+                    if (!empty($selectPhoneUser) && ($selectPhoneUser != Yii::$app->user->getId())) {
+                        throw new Exception('该订单只由' . $selectPhoneUserName . '操作');
                     }
                     $data['select_status'] = $afterStatus;
-                    if($afterStatus == Status::MEMBER_ORDER_SHOOT_STATUS_YES) {
+                    if ($afterStatus == Status::MEMBER_ORDER_SHOOT_STATUS_YES) {
                         $data['select_time'] = date('Y-m-d H:i:s');
                     }
                     $data['select_photos_user'] = Yii::$app->user->getId();
-                    $res = static::updateDataWithLog($data,$where);
+                    $res = static::updateDataWithLog($data, $where);
                     if ($res === false) {
                         throw new Exception('操作失败');
                     }
@@ -400,12 +416,12 @@ class MemberOrderCombo extends Common
                 //后期处理
                 case Status::MEMBER_ORDER_COMBO_NOT_COMPOSITE:
                     //判断是否是同一个员工操作
-                    if(!empty($compositeUser) && ($compositeUser != Yii::$app->user->getId())) {
-                        throw new Exception('该订单只由'.$compositeUserName.'操作');
+                    if (!empty($compositeUser) && ($compositeUser != Yii::$app->user->getId())) {
+                        throw new Exception('该订单只由' . $compositeUserName . '操作');
                     }
                     $data['composite_status'] = $afterStatus;
                     $data['composite_user'] = Yii::$app->user->getId();
-                    $res = static::updateDataWithLog($data,$where);
+                    $res = static::updateDataWithLog($data, $where);
                     if ($res === false) {
                         throw new Exception('操作失败');
                     }
@@ -414,10 +430,10 @@ class MemberOrderCombo extends Common
                 //通知取件
                 case Status::MEMBER_ORDER_COMBO_NOT_TAKE_PARK:
                     $data['take_park_status'] = $afterStatus;
-                    if($afterStatus == Status::MEMBER_ORDER_TAKE_PARK_STATUS_YES) {
+                    if ($afterStatus == Status::MEMBER_ORDER_TAKE_PARK_STATUS_YES) {
                         $data['take_park_time'] = date('Y-m-d H:i:s');
                     }
-                    $res = static::updateDataWithLog($data,$where);
+                    $res = static::updateDataWithLog($data, $where);
                     if ($res === false) {
                         throw new Exception('操作失败');
                     }
@@ -429,7 +445,8 @@ class MemberOrderCombo extends Common
         }
     }
 
-    public function quoteOrderInfo() {
+    public function quoteOrderInfo()
+    {
         try {
             $orderNumber = Yii::$app->request->post('orderNumber');
             if (empty($orderNumber)) {
@@ -439,7 +456,7 @@ class MemberOrderCombo extends Common
             $where['combo_order_number'] = $orderNumber;
             $where['business_id'] = static::getBusinessId();
             $orderInfo = MemberOrder::getOneByWhere(['order_number' => $orderNumber]);
-            if (empty($orderInfo)){
+            if (empty($orderInfo)) {
                 throw new Exception('订单信息不存在');
             }
             //获取套系信息
@@ -455,7 +472,8 @@ class MemberOrderCombo extends Common
         }
     }
 
-    public function doReplan($orderNumber = '') {
+    public function doReplan($orderNumber = '')
+    {
         $trans = Yii::$app->db->beginTransaction();
         try {
             if (empty($orderNumber)) {
@@ -477,7 +495,7 @@ class MemberOrderCombo extends Common
             }
             $trans->commit();
             return Functions::formatJson(1000, '标记成功');
-        } catch(Exception $e) {
+        } catch (Exception $e) {
             $trans->rollBack();
             return Functions::formatJson(2000, $e->getMessage());
         }
@@ -491,13 +509,14 @@ class MemberOrderCombo extends Common
     public function getComboOrderByWhere($where = [])
     {
         $comboOrderInfo = self::getByWhere($where);
-        if(!isset($comboOrderInfo) && empty($comboOrderInfo)) {
+        if (!isset($comboOrderInfo) && empty($comboOrderInfo)) {
             return Functions::formatJson(2001, '未获取到信息');
         }
 
-        $memberInfo = Member::getFormArray(['business_id' => Common::getBusinessId()],'id','name');
-        $employeeInfo = Employee::getFormArray(['alliance_business_id' => Common::getBusinessId()],'id','employee_name');
-        $orderInfo = MemberOrder::getFormArray(['business_id' => Common::getBusinessId()],'order_number','member_id');
+        $memberInfo = Member::getFormArray(['business_id' => Common::getBusinessId()], 'id', 'name');
+        $employeeInfo = Employee::getFormArray(['alliance_business_id' => Common::getBusinessId()], 'id',
+            'employee_name');
+        $orderInfo = MemberOrder::getFormArray(['business_id' => Common::getBusinessId()], 'order_number', 'member_id');
 
         foreach ($comboOrderInfo as $key => $value) {
             $wh['combo_name'] = $value['combo_name'];
@@ -511,16 +530,21 @@ class MemberOrderCombo extends Common
             $comboOrderInfo[$key]['composite_status'] = Status::memberOrderComboCompositeStatusMap()[$value['composite_status']];
             $comboOrderInfo[$key]['deal_status'] = Status::memberOrderComboDealStatusMap()[$value['deal_status']];
             $comboOrderInfo[$key]['take_park_status'] = Status::memberOrderComboTakeParkStatusMap()[$value['take_park_status']];
-            $comboOrderInfo[$key]['create_time'] = date('Y-m-d',strtotime($value['create_time'])).'</br>'.date('H:i:s',strtotime($value['create_time']));
-            $comboOrderInfo[$key]['shoot_finish_time'] = $value['shoot_finish_time'] ? date('Y-m-d',strtotime($value['shoot_finish_time'])).'</br>'.date('H:i:s',strtotime($value['shoot_finish_time'])) : '--';
-            $comboOrderInfo[$key]['select_time'] = date('Y-m-d',strtotime($value['select_time'])).'</br>'.date('H:i:s',strtotime($value['select_time']));
-            $comboOrderInfo[$key]['take_park_time'] = date('Y-m-d',strtotime($value['take_park_time'])).'</br>'.date('H:i:s',strtotime($value['take_park_time']));
+            $comboOrderInfo[$key]['create_time'] = date('Y-m-d',
+                    strtotime($value['create_time'])) . '</br>' . date('H:i:s', strtotime($value['create_time']));
+            $comboOrderInfo[$key]['shoot_finish_time'] = $value['shoot_finish_time'] ? date('Y-m-d',
+                    strtotime($value['shoot_finish_time'])) . '</br>' . date('H:i:s',
+                    strtotime($value['shoot_finish_time'])) : '--';
+            $comboOrderInfo[$key]['select_time'] = date('Y-m-d',
+                    strtotime($value['select_time'])) . '</br>' . date('H:i:s', strtotime($value['select_time']));
+            $comboOrderInfo[$key]['take_park_time'] = date('Y-m-d',
+                    strtotime($value['take_park_time'])) . '</br>' . date('H:i:s', strtotime($value['take_park_time']));
             $comboOrderInfo[$key]['shoot_user'] = $value['shoot_user'] ? $employeeInfo[$value['shoot_user']] : '';
             $comboOrderInfo[$key]['select_photos_user'] = $value['select_photos_user'] ? $employeeInfo[$value['select_photos_user']] : '';
             $comboOrderInfo[$key]['composite_user'] = $value['composite_user'] ? $employeeInfo[$value['composite_user']] : '';
             $comboOrderInfo[$key]['deal_user'] = $value['deal_user'] ? $employeeInfo[$value['deal_user']] : '';
         }
-        return Functions::formatJson(1000, '',$comboOrderInfo);
+        return Functions::formatJson(1000, '', $comboOrderInfo);
     }
 
     public function showOrderComboInfo($where = [])
@@ -528,7 +552,7 @@ class MemberOrderCombo extends Common
         //获取订单信息
         $memberOrderComboInfo = self::getOneByWhere($where);
 
-        $orderList = MemberOrder::getFormArray(['business_id' => Common::getBusinessId()],'order_number','member_id');
+        $orderList = MemberOrder::getFormArray(['business_id' => Common::getBusinessId()], 'order_number', 'member_id');
         $orderInfo = MemberOrder::getOneByWhere(['order_number' => $memberOrderComboInfo['order_number']]);
         //获取会员信息
         $model = new Member();

@@ -39,11 +39,12 @@ class  MemberOrderController extends CommonController
 
     public function actionUploadImage()
     {
-        $info = $this->memberOrderModel->getInfo(Yii::$app->request->post('id'));
-        return $this->render('upload_image', ['info' => $info]);
+        $memberOrder = MemberOrder::findOne(Yii::$app->request->post('id'));
+        return $this->render('upload_image', ['memberOrder' => $memberOrder]);
     }
 
-    public function actionReceiveImage(){
+    public function actionReceiveImage()
+    {
         $model = new MemberOrderImage();
         $this->returnJson();
         return $model->uploadImage();
