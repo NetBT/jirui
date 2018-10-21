@@ -1136,6 +1136,12 @@ class MemberOrder extends Common
         return $sum;
     }
 
+    public function getRestRegisterCount()
+    {
+        $rest = $this->getRegisterCount() - count($this->images);
+        return $rest > 0 ? $rest : 0;
+    }
+
     public function getCombos()
     {
         return $this->hasMany(Combo::class, ['id' => 'combo_id'])->via('comboOrders');
@@ -1144,5 +1150,10 @@ class MemberOrder extends Common
     public function getComboOrders()
     {
         return $this->hasMany(MemberOrderCombo::class, ['order_number' => 'order_number']);
+    }
+
+    public function getImages()
+    {
+        return $this->hasMany(MemberOrderImage::class, ['member_order_id' => 'id']);
     }
 }

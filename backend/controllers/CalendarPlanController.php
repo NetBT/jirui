@@ -1,4 +1,5 @@
 <?php
+
 namespace backend\controllers;
 
 use backend\models\AbCalendarPlan;
@@ -20,7 +21,9 @@ class CalendarPlanController extends CommonController
         parent::__construct($id, $module, $config);
         $this->orderComboModel = new MemberOrderCombo();
     }
-    public function actionList() {
+
+    public function actionList()
+    {
         $orderNumber = Yii::$app->request->get('orderNumber');
         $data = ['orderNumber' => ''];
         if (!empty($orderNumber)) {
@@ -29,29 +32,33 @@ class CalendarPlanController extends CommonController
         return $this->render('list', $data);
     }
 
-    public function actionListData() {
+    public function actionListData()
+    {
         $this->returnJson();
         $model = new AbCalendarPlan();
         return $model->getListData();
     }
 
-    public function actionAdd() {
+    public function actionAdd()
+    {
         $data['model'] = new AbCalendarPlan(['scenario' => 'add']);
         $data['date'] = Yii::$app->request->post('date');
         $data['orderNumber'] = Yii::$app->request->get('orderNumber');
         return $this->renderAjax('add', $data);
     }
 
-    public function actionDoAdd() {
+    public function actionDoAdd()
+    {
         $model = new AbCalendarPlan(['scenario' => 'add']);
         $this->returnJson();
-        if ($model->load(\Yii::$app->request->post())){
+        if ($model->load(\Yii::$app->request->post())) {
             return $model->saveData();
         }
         return Functions::formatJson(2000, '获取失败');
     }
 
-    public function actionEdit() {
+    public function actionEdit()
+    {
         $id = \Yii::$app->request->post('id');
         $data['orderNumber'] = Yii::$app->request->get('orderNumber');
         $data['model'] = AbCalendarPlan::findOne(['id' => $id]);
@@ -59,22 +66,26 @@ class CalendarPlanController extends CommonController
         $data['model']->setScenario('edit');
         return $this->renderAjax('edit', $data);
     }
-    public function actionDoEdit() {
+
+    public function actionDoEdit()
+    {
         $model = new AbCalendarPlan(['scenario' => 'edit']);
         $this->returnJson();
-        if ($model->load(\Yii::$app->request->post())){
+        if ($model->load(\Yii::$app->request->post())) {
             return $model->saveData();
         }
         return Functions::formatJson(2000, '获取失败');
     }
 
-    public function actionDoDrop() {
+    public function actionDoDrop()
+    {
         $model = new AbCalendarPlan();
         $this->returnJson();
         return $model->saveDrop();
     }
 
-    public function actionDoDelete() {
+    public function actionDoDelete()
+    {
         $this->returnJson();
         $id = \Yii::$app->request->post('id');
         $res = AbCalendarPlan::deleteAll(['id' => $id]);
@@ -92,8 +103,7 @@ class CalendarPlanController extends CommonController
     {
         $type = \Yii::$app->request->get('type');
         $editAdminModel = new AbCalendarPlan(['scenario' => $type]);
-        if (\Yii::$app->request->isAjax && $editAdminModel->load(\Yii::$app->request->post()))
-        {
+        if (\Yii::$app->request->isAjax && $editAdminModel->load(\Yii::$app->request->post())) {
 
             $this->returnJson();
             return ActiveForm::validate($editAdminModel);
@@ -106,7 +116,7 @@ class CalendarPlanController extends CommonController
         $orderNum = trim(Yii::$app->request->post('orderNum'));
         $model = new MemberOrderCombo();
         $this->returnJson();
-        return $model->getComboOrderByWhere(['order_number' => $orderNum,'is_delete' => '1']);
+        return $model->getComboOrderByWhere(['order_number' => $orderNum, 'is_delete' => '1']);
     }
 
     //==========================   全部列表   =================================
@@ -120,22 +130,32 @@ class CalendarPlanController extends CommonController
     {
         return $this->render('order_combo_not_shoot');
     }
+
+    //==========================   已拍摄列表   =================================
+    public function actionIndexShoot()
+    {
+        return $this->render('order_combo_shoot');
+    }
+
     public function actionListOrder()
     {
         $type = Yii::$app->request->get('type');
         $this->returnJson();
         return $this->orderComboModel->handelInit($this->orderComboModel->getListData($type));
     }
+
     //==========================   未选片列表   =================================
     public function actionIndexNotSelect()
     {
         return $this->render('order_combo_not_select');
     }
+
     //==========================   后期列表   =================================
     public function actionIndexNotComposite()
     {
         return $this->render('order_combo_not_composite');
     }
+
     //==========================   成品理件列表   =================================
     public function actionIndexNotDeal()
     {
@@ -143,17 +163,20 @@ class CalendarPlanController extends CommonController
     }
 
 
-    public function actionReplanOrder() {
+    public function actionReplanOrder()
+    {
         return $this->render('replan_order');
     }
 
-    public function actionReplanOrderData() {
+    public function actionReplanOrderData()
+    {
         $type = Yii::$app->request->get('type');
         $this->returnJson();
         return $this->orderComboModel->handelInit($this->orderComboModel->getListData($type));
     }
 
-    public function actionDoReplan() {
+    public function actionDoReplan()
+    {
         $orderNumber = Yii::$app->request->post('orderNumber');
         $this->returnJson();
         $model = new MemberOrderCombo();

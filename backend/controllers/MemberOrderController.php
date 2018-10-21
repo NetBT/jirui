@@ -10,6 +10,7 @@ use backend\models\MemberOrderImage;
 use Yii;
 use yii\bootstrap\ActiveForm;
 use backend\models\AbGoods;
+use yii\web\NotFoundHttpException;
 
 /**
  * MemberOrder controller
@@ -40,7 +41,11 @@ class  MemberOrderController extends CommonController
     public function actionUploadImage()
     {
         $memberOrder = MemberOrder::findOne(Yii::$app->request->post('id'));
-        return $this->render('upload_image', ['memberOrder' => $memberOrder]);
+        if ($memberOrder) {
+            return $this->render('upload_image', ['memberOrder' => $memberOrder]);
+        } else {
+            throw new NotFoundHttpException('页面没有找到！');
+        }
     }
 
     public function actionReceiveImage()
