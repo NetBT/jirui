@@ -114,7 +114,7 @@ class MemberOrderImage extends Common
     {
         $url = '';
         if (!$this->isNewRecord) {
-            $url = $this->path . $this->filename;
+            $url = '/' . $this->path . $this->filename;
         }
         return $url;
     }

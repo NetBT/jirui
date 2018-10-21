@@ -7,6 +7,17 @@ use Yii;
 use yii\base\Exception;
 use common\models\Functions;
 
+/**
+ * 功能的简述：Class MemberOrderCombo
+ * 创建作者：
+ * 创建时间：
+ * @property Combo $combo
+ * @property AbGoods[]|array $comboGoods
+ * @property MemberOrderImage[]|array $orderImages
+ * @property MemberOrder $memberOrder
+ * 修改日期         修改者             BUG小功能修改申请单号
+ * 注意：
+ */
 class MemberOrderCombo extends Common
 {
 
@@ -42,6 +53,7 @@ class MemberOrderCombo extends Common
     }
 
     public $business_name;
+    public $goods_images = [];
 
     /**
      * 获取字段
@@ -564,5 +576,47 @@ class MemberOrderCombo extends Common
             'order' => $orderInfo,
         ];
         return $info;
+    }
+
+    public function inImages($image_id, $goods_id)
+    {
+        return isset($this->goodsImages($goods_id)[$image_id]);
+    }
+
+    public function goodsImages($goods_id)
+    {
+        if ($this->goods_images[$goods_id]) {
+            return $this->goods_images[$goods_id];
+        }
+        $images = MemberOrderGoodsImages::find()->where([
+            'combo_order_number' => $this->combo_order_number,
+            'goods_id' => $goods_id
+        ])->indexBy('image_id')->all();
+        $this->goods_images[$goods_id] = $images;
+        return $images;
+    }
+
+    public function getCombo()
+    {
+        return $this->hasOne(Combo::class, ['id' => 'combo_id']);
+    }
+
+    public function getComboGoods()
+    {
+        if ($this->combo) {
+            $goods_content = $this->combo->goods_content;
+            return AbGoods::findAll(['id' => explode(',', $goods_content)]);
+        }
+        return [];
+    }
+
+    public function getMemberOrder()
+    {
+        return $this->hasOne(MemberOrder::class, ['order_number' => 'order_number']);
+    }
+
+    public function getOrderImages()
+    {
+        return $this->hasMany(MemberOrderImage::class, ['member_order_id' => 'id'])->via('memberOrder');
     }
 }

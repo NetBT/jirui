@@ -1,4 +1,5 @@
 <?php
+
 namespace backend\models;
 
 use common\models\Status;
@@ -27,15 +28,33 @@ class AbGoods extends Common
     {
         return [
             #不能为空
-            [[
-                'goods_code', 'goods_name', 'goods_price', 'goods_cost', 'goods_discount',
-                'goods_color', 'goods_size', 'goods_num', 'goods_category', 'goods_type'
-            ], 'required','message' => '不能为空','on' => ['add', 'edit']],
+            [
+                [
+                    'goods_code',
+                    'goods_name',
+                    'goods_price',
+                    'goods_cost',
+                    'goods_discount',
+                    'goods_color',
+                    'goods_size',
+                    'goods_num',
+                    'goods_category',
+                    'goods_type'
+                ],
+                'required',
+                'message' => '不能为空',
+                'on' => ['add', 'edit']
+            ],
 
             //验证名称和编号
             [['goods_code', 'goods_name'], 'unique', 'message' => '已存在', 'on' => 'add'],
             //验证数字
-            [['goods_num', 'goods_category', 'goods_cost', 'goods_discount', 'goods_price','goods_p'], 'number', 'message' => '必须为数字','on' => ['add', 'edit']]
+            [
+                ['goods_num', 'goods_category', 'goods_cost', 'goods_discount', 'goods_price', 'goods_p'],
+                'number',
+                'message' => '必须为数字',
+                'on' => ['add', 'edit']
+            ]
         ];
     }
 
@@ -71,7 +90,7 @@ class AbGoods extends Common
      */
     public function scenarios()
     {
-        $newScenarios =  [
+        $newScenarios = [
             'add' => [
                 'goods_code',
                 'goods_name',
@@ -114,7 +133,8 @@ class AbGoods extends Common
      * 获取商品列表
      * @return array
      */
-    public function getListData () {
+    public function getListData()
+    {
         $returnData = [
             "draw" => intval(Yii::$app->request->post('draw')),
             "recordsTotal" => 0,
@@ -128,10 +148,11 @@ class AbGoods extends Common
         $where['AB_id'] = Common::getBusinessId();
         isset($post['goods_code']) && !empty($post['goods_code']) ? ($where['goods_code'] = $post['goods_code']) : null;
         isset($post['goods_name']) && !empty($post['goods_name']) ? ($where['goods_name'] = $post['goods_name']) : null;
-        $startTime =  isset($post['startTime']) && !empty($post['startTime']) ? $post['startTime'] : null;
-        $endTime =  isset($post['endTime']) && !empty($post['endTime']) ? $post['endTime'] : null;
+        $startTime = isset($post['startTime']) && !empty($post['startTime']) ? $post['startTime'] : null;
+        $endTime = isset($post['endTime']) && !empty($post['endTime']) ? $post['endTime'] : null;
         //套系是否有该商品
-        isset($post['selectGoods']) && !empty($post['selectGoods']) ? $selectGoods = explode(',',rtrim($post['selectGoods'],',')) : $selectGoods = [];
+        isset($post['selectGoods']) && !empty($post['selectGoods']) ? $selectGoods = explode(',',
+            rtrim($post['selectGoods'], ',')) : $selectGoods = [];
         $andWhere = $this->getAndWhereForTime('create_time', $startTime, $endTime);
         $count = static::getCountByAndWhere($where, $andWhere);
 
@@ -140,7 +161,8 @@ class AbGoods extends Common
         //设置分页
         $this->setPagination();
         //获取数据
-        $returnData['data'] = static::getByAndWhere($where, $andWhere, ['*'], 'create_time desc', $this->_Pagination['offset'], $this->_Pagination['limit']);
+        $returnData['data'] = static::getByAndWhere($where, $andWhere, ['*'], 'create_time desc',
+            $this->_Pagination['offset'], $this->_Pagination['limit']);
         if (!empty($returnData['data'])) {
             foreach ($returnData['data'] as $k => $v) {
                 $info = Employee::getOneByWhere(['id' => $v['create_user']], 'employee_name');
@@ -149,27 +171,29 @@ class AbGoods extends Common
 
                 //套系是否有该商品
                 $returnData['data'][$k]['checked'] = '';
-                if(isset($selectGoods) && !empty($selectGoods)){
-                    $returnData['data'][$k]['checked'] = in_array($v['id'],$selectGoods) ? 'checked' : '' ;
+                if (isset($selectGoods) && !empty($selectGoods)) {
+                    $returnData['data'][$k]['checked'] = in_array($v['id'], $selectGoods) ? 'checked' : '';
                 }
             }
         }
         return $returnData;
     }
 
-    public static function makeGoodsCode() {
+    public static function makeGoodsCode()
+    {
         //获取当日新增加盟商数量
         $curr = date('Y-m-d 00:00:00');
         $amount = static::getCountByAndWhere([], ['>=', 'create_time', $curr]);
-        $amount ++;
-        return 'AB'.Common::getBusinessId().'G' . date("YmdH") . Functions::zeroFill($amount, 4, 0);
+        $amount++;
+        return 'AB' . Common::getBusinessId() . 'G' . date("YmdH") . Functions::zeroFill($amount, 4, 0);
     }
 
     /**
      * 保存商品信息
      * @return array
      */
-    public function saveData() {
+    public function saveData()
+    {
         $trans = Yii::$app->db->beginTransaction();
         try {
             if (!$this->validate()) {
@@ -228,7 +252,8 @@ class AbGoods extends Common
      * 获取商品列表
      * @return mixed
      */
-    public function getGoodsListForSale() {
+    public function getGoodsListForSale()
+    {
         $where['goods_status'] = Status::GOODS_STATUS_PUT_ON_SHELVES;
         $goodsCode = Yii::$app->request->get('goodsCode');
         if (!empty($goodsCode)) {
@@ -240,14 +265,15 @@ class AbGoods extends Common
         }
         $count = static::getCountByWhere($where);
         $pages = new Pagination(['totalCount' => $count, 'pageSize' => 4]);
-        $data['list'] = $this->getGoodsListForWhere($where, '*', 'create_time desc',  $pages->offset,  $pages->limit);
+        $data['list'] = $this->getGoodsListForWhere($where, '*', 'create_time desc', $pages->offset, $pages->limit);
         $data['goodsCode'] = $goodsCode;
         $data['goodsName'] = $goodsName;
         $data['pages'] = $pages;
         return $data;
     }
 
-    public function getGoodsListForWhere($where = [], $field = '*', $order  = null, $offset = null, $limit = null) {
+    public function getGoodsListForWhere($where = [], $field = '*', $order = null, $offset = null, $limit = null)
+    {
         $list = static::getByWhere($where, $field, $order, $offset, $limit);
         $currDate = date('Y-m-d H:i:s');
         foreach ($list as $k => $v) {
@@ -262,7 +288,8 @@ class AbGoods extends Common
         return $list;
     }
 
-    public function getGoodsCurrPrice($id = 0) {
+    public function getGoodsCurrPrice($id = 0)
+    {
         $info = static::getOneByWhere(['id' => $id]);
         $currTime = date('Y-m-d H:i:s');
         if (!empty($info)) {
@@ -276,7 +303,8 @@ class AbGoods extends Common
         }
     }
 
-    public static function getGoodsCurrPriceByInfo($info = []) {
+    public static function getGoodsCurrPriceByInfo($info = [])
+    {
         if (empty($info)) {
             return false;
         }
@@ -296,9 +324,9 @@ class AbGoods extends Common
     {
         $where['AB_id'] = Common::getBusinessId();
         $list = self::find()->where($where)->asArray()->all();
-        $employeeInfo = Employee::getFormArray('','id','employee_name');
-        $goodsCategoryInfo = GoodsCategory::getFormArray('','id','category_name');
-        $abInfo = AB::getFormArray('','id','AB_name');
+        $employeeInfo = Employee::getFormArray('', 'id', 'employee_name');
+        $goodsCategoryInfo = GoodsCategory::getFormArray('', 'id', 'category_name');
+        $abInfo = AB::getFormArray('', 'id', 'AB_name');
         foreach ($list as $key => $value) {
             $list[$key]['create_user'] = $value['create_user'] ? $employeeInfo[$value['create_user']] : '--';
             $list[$key]['goods_category'] = $value['goods_category'] ? $goodsCategoryInfo[$value['goods_category']] : '--';
@@ -307,7 +335,7 @@ class AbGoods extends Common
         }
         Excel::export([
             'models' => $list,
-            'fileName' => date('Ymd').'导出商品信息',
+            'fileName' => date('Ymd') . '导出商品信息',
             'columns' => [
                 'AB_id',
                 'goods_code',
@@ -348,7 +376,8 @@ class AbGoods extends Common
     }
 
 
-    public function toggleShelf($goodsId = 0) {
+    public function toggleShelf($goodsId = 0)
+    {
         $trans = Yii::$app->db->beginTransaction();
         try {
             $goodsId = intval($goodsId);
@@ -356,14 +385,14 @@ class AbGoods extends Common
                 throw new Exception('商品信息错误');
             }
             $goodsInfo = static::getOneByWhere(['id' => $goodsId]);
-            if(empty($goodsInfo)) {
+            if (empty($goodsInfo)) {
                 throw new Exception('未找到商品信息');
             }
-            if($goodsInfo['goods_status'] == Status::AB_GOODS_STATUS_DELETE) {
+            if ($goodsInfo['goods_status'] == Status::AB_GOODS_STATUS_DELETE) {
                 throw new Exception('商品信息已删除,不能进行上下架操作');
             }
 
-            if($goodsInfo['goods_status'] == Status::AB_GOODS_STATUS_PUT_ON_SHELVES) {
+            if ($goodsInfo['goods_status'] == Status::AB_GOODS_STATUS_PUT_ON_SHELVES) {
                 $data['goods_status'] = Status::AB_GOODS_STATUS_PUT_OFF_SHELVES;
                 $str = '下架';
             } else {
@@ -383,7 +412,8 @@ class AbGoods extends Common
         }
     }
 
-    public function searchGoods($goodsCode = '') {
+    public function searchGoods($goodsCode = '')
+    {
         try {
             if (empty($goodsCode)) {
                 throw new Exception('商品编号不能为空');
@@ -396,7 +426,7 @@ class AbGoods extends Common
                 throw new Exception('商品信息未找到');
             }
 
-            if(empty($info['head_goods_id'])) {
+            if (empty($info['head_goods_id'])) {
                 $image = ABGoodsImages::getByWhere(['goods_id' => $info['id']]);
             } else {
                 $image = GoodsImages::getBusinessId(['goods_id' => $info['head_goods_id']]);
@@ -409,7 +439,8 @@ class AbGoods extends Common
         }
     }
 
-    public function doSockIn() {
+    public function doSockIn()
+    {
         $goodsCode = Yii::$app->request->post('goodsCode');
         $num = intval(Yii::$app->request->post('inNum'));
         $trans = Yii::$app->db->beginTransaction();
@@ -436,7 +467,7 @@ class AbGoods extends Common
             $data['goods_num'] = $info['goods_num'] + $num;
             $data['update_time'] = date('Y-m-d H:i:s');
             $res = static::updateData($data, $where);
-            if($res === false) {
+            if ($res === false) {
                 throw new Exception('更新库存失败');
             }
             //记录日志
@@ -452,7 +483,9 @@ class AbGoods extends Common
             return Functions::formatJson(2000, $e->getMessage());
         }
     }
-    public function doSockOut() {
+
+    public function doSockOut()
+    {
         $goodsCode = Yii::$app->request->post('goodsCode');
         $num = intval(Yii::$app->request->post('inNum'));
         $trans = Yii::$app->db->beginTransaction();
@@ -481,7 +514,7 @@ class AbGoods extends Common
             $data['goods_num'] = $info['goods_num'] - $num;
             $data['update_time'] = date('Y-m-d H:i:s');
             $res = static::updateData($data, $where);
-            if($res === false) {
+            if ($res === false) {
                 throw new Exception('更新库存失败');
             }
             //记录日志
@@ -496,5 +529,27 @@ class AbGoods extends Common
             $trans->rollBack();
             return Functions::formatJson(2000, $e->getMessage());
         }
+    }
+
+    /**
+     * 方法描述：
+     * @param $combo_order_number
+     * @return MemberOrderGoodsImages[]
+     * 注意：
+     */
+    public function getComboGoodsImages($combo_order_number)
+    {
+        return MemberOrderGoodsImages::findAll(['combo_order_number' => $combo_order_number, 'goods_id' => $this->id]);
+    }
+
+    /**
+     * 方法描述：
+     * @param $combo_order_number
+     * @return MemberOrderGoodsImages
+     * 注意：
+     */
+    public function getComboGoodsFirstImage($combo_order_number)
+    {
+        return MemberOrderGoodsImages::findOne(['combo_order_number' => $combo_order_number, 'goods_id' => $this->id]);
     }
 }

@@ -9,6 +9,15 @@ use yii\base\Exception;
 use common\models\Functions;
 use yii\bootstrap\ActiveForm;
 
+/**
+ * 功能的简述：Class MemberOrder
+ * 创建作者：
+ * 创建时间：
+ * @property MemberOrderCombo[] $comboOrders
+ * @property MemberOrderImage[] $images
+ * 修改日期         修改者             BUG小功能修改申请单号
+ * 注意：
+ */
 class MemberOrder extends Common
 {
 

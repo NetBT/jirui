@@ -55,6 +55,43 @@ class  MemberOrderController extends CommonController
         return $model->uploadImage();
     }
 
+    /**
+     * 方法描述：
+     * @param $combo_order_number
+     * @return string
+     * @throws NotFoundHttpException
+     * 注意：
+     */
+    public function actionSelect($combo_order_number)
+    {
+        $comboOrder = MemberOrderCombo::findOne(['combo_order_number'=>$combo_order_number]);
+        if (empty($comboOrder)) {
+            throw new NotFoundHttpException('这个订单没有找到');
+        }
+        if(empty($comboOrder->comboGoods)){
+            throw new NotFoundHttpException('这个订单没有选择商品');
+        }
+        return $this->render('select', ['comboOrder' => $comboOrder]);
+    }
+    /**
+     * 方法描述：
+     * @param $combo_order_number
+     * @return string
+     * @throws NotFoundHttpException
+     * 注意：
+     */
+    public function actionGoodsSelect($combo_order_number)
+    {
+        $comboOrder = MemberOrderCombo::findOne(['combo_order_number'=>$combo_order_number]);
+        if (empty($comboOrder)) {
+            throw new NotFoundHttpException('这个订单没有找到');
+        }
+        if(empty($comboOrder->comboGoods)){
+            throw new NotFoundHttpException('这个订单没有选择商品');
+        }
+        return $this->render('goods_select', ['comboOrder' => $comboOrder]);
+    }
+
     public function actionGuadan()
     {
         return $this->render("guadan");

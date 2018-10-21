@@ -35,70 +35,74 @@
     </div>
 </div>
 <script>
-    $(function(){
+    $(function () {
 
-        DataTable.init('initMemberOrderComboNotSelectList','#notSelectList','<?= \yii\helpers\Url::to(['calendar-plan/list-order','type' => \common\models\Status::MEMBER_ORDER_COMBO_NOT_SELECT])?>',getParams());
+        DataTable.init('initMemberOrderComboNotSelectList', '#notSelectList', '<?= \yii\helpers\Url::to([
+            'calendar-plan/list-order',
+            'type' => \common\models\Status::MEMBER_ORDER_COMBO_NOT_SELECT
+        ])?>', getParams());
 
         //点击事件
-        $("#doSearch").bind('click',function(){
+        $("#doSearch").bind('click', function () {
             DataTable.reloadTable(getParams());
         });
         //刷新
-        $("#refresh").bind('click',function(){
+        $("#refresh").bind('click', function () {
             DataTable.id = '#notSelectList';
             DataTable.drawTable();
         });
     });
+
     /*
      * 搜集搜索条件
      */
-    function getParams () {
+    function getParams() {
         return {
-            orderComboNumber : $('#searchOrderComboNum').val(),
-            memberName : $('#searchMemberName').val(),
+            orderComboNumber: $('#searchOrderComboNum').val(),
+            memberName: $('#searchMemberName').val(),
         }
     }
 
     var notSelect = {
-        startSelectUrl : '<?= \yii\helpers\Url::to(['calendar-plan/change-combo-order-status'])?>',
-        endSelectUrl : '<?= \yii\helpers\Url::to(['calendar-plan/change-combo-order-status'])?>',
-        secondUrl : '<?= \yii\helpers\Url::to(['member-order/second']) ?>',
-        startSelectModal : function(comboOrderNumber)
-        {
+        startSelectUrl: '<?= \yii\helpers\Url::to(['calendar-plan/change-combo-order-status'])?>',
+        endSelectUrl: '<?= \yii\helpers\Url::to(['calendar-plan/change-combo-order-status'])?>',
+        secondUrl: '<?= \yii\helpers\Url::to(['member-order/second']) ?>',
+        startSelectModal: function (comboOrderNumber) {
             var _this = this;
-            layer.confirm('确定对【'+comboOrderNumber+'】订单开始选片？',function(index){
+            layer.confirm('确定对【' + comboOrderNumber + '】订单开始选片？', function (index) {
                 var params = {
                     comboOrderNumber: comboOrderNumber,
-                    type : <?= \common\models\Status::MEMBER_ORDER_COMBO_NOT_SELECT?>,
-                    beforeStatus : <?= \common\models\Status::MEMBER_ORDER_SELECT_STATUS_NO?>,
-                    afterStatus : <?= \common\models\Status::MEMBER_ORDER_SELECT_STATUS_ING?>,
+                    type: <?= \common\models\Status::MEMBER_ORDER_COMBO_NOT_SELECT?>,
+                    beforeStatus: <?= \common\models\Status::MEMBER_ORDER_SELECT_STATUS_NO?>,
+                    afterStatus: <?= \common\models\Status::MEMBER_ORDER_SELECT_STATUS_ING?>,
+                };
+                ajaxSubmit(_this.startSelectUrl, params, function () {
+                    creatIframe('<?= \yii\helpers\Url::to(['membber-order/select'])?>?member_order_number=' + comboOrderNumber,'选片');
+                });
+            });
+        },
+        continueSelectModal: function (comboOrderNumber) {
+            creatIframe('<?= \yii\helpers\Url::to(['member-order/goods-select'])?>?combo_order_number=' + comboOrderNumber,'选片');
+        },
+        endSelectModal: function (comboOrderNumber) {
+            var _this = this;
+            layer.confirm('【' + comboOrderNumber + '】该订单选片完成？', function (index) {
+                var params = {
+                    comboOrderNumber: comboOrderNumber,
+                    type: <?= \common\models\Status::MEMBER_ORDER_COMBO_NOT_SELECT?>,
+                    beforeStatus: <?= \common\models\Status::MEMBER_ORDER_SELECT_STATUS_ING?>,
+                    afterStatus: <?= \common\models\Status::MEMBER_ORDER_SELECT_STATUS_YES?>,
                 };
                 ajaxSubmit(_this.startSelectUrl, params, function () {
                     DataTable.drawTable();
                 });
             });
         },
-        endSelectModal : function(comboOrderNumber)
-        {
-            var _this = this;
-            layer.confirm('【'+comboOrderNumber+'】该订单选片完成？',function(index){
-                var params = {
-                    comboOrderNumber: comboOrderNumber,
-                    type : <?= \common\models\Status::MEMBER_ORDER_COMBO_NOT_SELECT?>,
-                    beforeStatus : <?= \common\models\Status::MEMBER_ORDER_SELECT_STATUS_ING?>,
-                    afterStatus : <?= \common\models\Status::MEMBER_ORDER_SELECT_STATUS_YES?>,
-                };
-                ajaxSubmit(_this.startSelectUrl, params, function () {
-                    DataTable.drawTable();
-                });
-            });
-        },
-        secondModal : function(order_number)
-        {
+        secondModal: function (order_number) {
             var param = {
-                order_number : order_number,
+                order_number: order_number,
             };
-            layer_show(param, '二销售款', this.secondUrl,780,500);
+            layer_show(param, '二销售款', this.secondUrl, 780, 500);
         },
     };
 </script>

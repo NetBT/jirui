@@ -1273,7 +1273,8 @@ var DataTable = {
                         html = '<a style="text-decoration:none" onClick="notSelect.startSelectModal(\'' + oData.combo_order_number + '\')" href="javascript:;" title="开始选片"><i class="fa fa-hand-o-up"></i></a>';
                     }
                     if(oData.select_status == '选片中'){
-                        html = '<a style="text-decoration:none" onClick="notSelect.endSelectModal(\'' + oData.combo_order_number + '\')" href="javascript:;" title="选片完成"><i class="fa fa-hand-rock-o"></i></a>';
+                        html = '<a style="text-decoration:none" onClick="notSelect.continueSelectModal(\'' + oData.combo_order_number + '\')" href="javascript:;" title="继续选片"><i class="fa fa-hand-paper-o"></i></a>' +
+                            '<a style="text-decoration:none" onClick="notSelect.endSelectModal(\'' + oData.combo_order_number + '\')" href="javascript:;" title="选片完成"><i class="fa fa-hand-rock-o"></i></a>';
                     }
                     html += '<a style="text-decoration:none" onClick="notSelect.secondModal(\'' + oData.order_number + '\')" href="javascript:;" title="二销售款"><i class="fa fa-chain"></i></a>';
                     $(nTd).addClass('center').html(html);
