@@ -35,11 +35,11 @@ class MemberOrderGoodsImages extends Common
             [
                 [
                     "id",                   //主键
-                    "order_number",         //总订单编号
-                    "combo_order_number",   //套系订单编号
-                    "image_id",           //图片ID
-                    "goods_id",             //商品ID
-                    "created_at"            //创建时间
+                    "order_number",
+                    "combo_order_number",
+                    "image_id",
+                    "goods_id",
+                    "created_at"
                 ],
                 'required'
             ],

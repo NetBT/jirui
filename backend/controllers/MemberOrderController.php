@@ -6,6 +6,7 @@ use backend\models\Member;
 use backend\models\MemberOrder;
 use backend\models\MemberOrderCombo;
 use backend\models\MemberOrderDetail;
+use backend\models\MemberOrderGoodsImages;
 use backend\models\MemberOrderImage;
 use Yii;
 use yii\bootstrap\ActiveForm;
@@ -62,17 +63,79 @@ class  MemberOrderController extends CommonController
      * @throws NotFoundHttpException
      * 注意：
      */
-    public function actionSelect($combo_order_number)
+    public function actionSelect()
     {
-        $comboOrder = MemberOrderCombo::findOne(['combo_order_number'=>$combo_order_number]);
+        $get= Yii::$app->request->get();
+        $combo_order_number = $get['combo_order_number'];
+        $goods_id = $get['goods_id'];
+        $comboOrder = MemberOrderCombo::findOne(['combo_order_number' => $combo_order_number]);
         if (empty($comboOrder)) {
             throw new NotFoundHttpException('这个订单没有找到');
         }
-        if(empty($comboOrder->comboGoods)){
+        $abGoods = AbGoods::findOne($goods_id);
+        if (empty($comboOrder->comboGoods)) {
             throw new NotFoundHttpException('这个订单没有选择商品');
         }
-        return $this->render('select', ['comboOrder' => $comboOrder]);
+        return $this->render('select', ['comboOrder' => $comboOrder,'abGoods'=>$abGoods]);
     }
+
+    public function actionChoose()
+    {
+        $post = Yii::$app->request->post();
+        $images_id = $post['images'];
+        $images = MemberOrderImage::findAll($images_id);
+        $params = array_merge($post, [
+            'images' => $images,
+            'comboOrder' => MemberOrderCombo::findOne(['combo_order_number' => $post['combo_order_number']])
+        ]);
+        return $this->render('choose', $params);
+    }
+
+    /**
+     * @return string
+     * @throws \yii\db\Exception
+     * 注意：
+     */
+    public function actionAccept()
+    {
+        $post = Yii::$app->request->post();
+        $images_id = $post['images'];
+        $combo_order_number = $post['combo_order_number'];
+        $order_number = $post['order_number'];
+        $goods_id = $post['goods_id'];
+        $rows = [];
+        if(empty($combo_order_number)||empty($goods_id)||empty($images_id)){
+            return $this->render('end',['msg'=>'套系ID，商品ID，图片ID不能为空！']);
+        }
+        foreach ($images_id as $item) {
+            $rows[] = [
+                'combo_order_number' => $combo_order_number,
+                'order_number' => $order_number,
+                'goods_id' => $goods_id,
+                'image_id' => $item,
+                'created_at' => time()
+            ];
+        }
+        $transaction = Yii::$app->db->beginTransaction();
+        try{
+            $res = MemberOrderGoodsImages::deleteAll(['combo_order_number'=>$combo_order_number,'goods_id'=>$goods_id]);
+            if ($rows) {
+                Yii::$app->db->createCommand()->batchInsert(MemberOrderGoodsImages::tableName(), [
+                    "order_number",
+                    "combo_order_number",
+                    "image_id",
+                    "goods_id",
+                    "created_at"
+                ], $rows)->execute();
+            }
+        }catch (\Exception  $exception){
+            $transaction->rollBack();
+            return $this->render('end',['msg'=>'选片失败'.$exception->getMessage()]);
+        }
+        $transaction->commit();
+        return $this->render('end',['msg'=>'选片成功']);
+    }
+
     /**
      * 方法描述：
      * @param $combo_order_number
@@ -82,11 +145,11 @@ class  MemberOrderController extends CommonController
      */
     public function actionGoodsSelect($combo_order_number)
     {
-        $comboOrder = MemberOrderCombo::findOne(['combo_order_number'=>$combo_order_number]);
+        $comboOrder = MemberOrderCombo::findOne(['combo_order_number' => $combo_order_number]);
         if (empty($comboOrder)) {
             throw new NotFoundHttpException('这个订单没有找到');
         }
-        if(empty($comboOrder->comboGoods)){
+        if (empty($comboOrder->comboGoods)) {
             throw new NotFoundHttpException('这个订单没有选择商品');
         }
         return $this->render('goods_select', ['comboOrder' => $comboOrder]);

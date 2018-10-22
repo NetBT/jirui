@@ -19,7 +19,7 @@ class FancyBoxAsset extends AssetBundle
 
     //资源包中包含的js文件
     public $js = [
-        '/js-unit/fancybox-3.5.2/dist/jquery.fancybox.min.js',
+        '/js-unit/fancybox-3.5.2/dist/jquery.fancybox.js',
     ];
 
     public $jsOptions = ['position'=>View::POS_BEGIN];
