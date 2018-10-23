@@ -121,10 +121,10 @@ class  MemberOrderController extends CommonController
             $res = MemberOrderGoodsImages::deleteAll(['combo_order_number'=>$combo_order_number,'goods_id'=>$goods_id]);
             if ($rows) {
                 Yii::$app->db->createCommand()->batchInsert(MemberOrderGoodsImages::tableName(), [
-                    "order_number",
                     "combo_order_number",
-                    "image_id",
+                    "order_number",
                     "goods_id",
+                    "image_id",
                     "created_at"
                 ], $rows)->execute();
             }

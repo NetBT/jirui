@@ -17,8 +17,7 @@
             'goods_id' => $abGoods->id
         ]) ?>">
             <? if ($abGoods->getComboGoodsFirstImage($comboOrder->combo_order_number)): ?>
-                <img src="<?= $abGoods->getComboGoodsFirstImage($comboOrder->combo_order_number) ?>" width="240"
-                     height="160"/>
+                <img src="<?= $abGoods->getComboGoodsFirstImage($comboOrder->combo_order_number)->getImageUrl() ?>" style="width:240px;height:160px"/>
             <? else: ?>
                 <div style="width:240px;height:160px">empty!</div>
             <? endif; ?>
