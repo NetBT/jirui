@@ -25,7 +25,7 @@ class MemberOrderGoodsImages extends Common
         "order_number",         //总订单编号
         "combo_order_number",   //套系订单编号
         "image_id",           //图片ID
-        "goods_id",             //商品ID
+        "goods_code",             //商品ID
         "created_at"            //创建时间
     ];
 
@@ -38,14 +38,15 @@ class MemberOrderGoodsImages extends Common
                     "order_number",
                     "combo_order_number",
                     "image_id",
-                    "goods_id",
+                    "goods_code",
                     "created_at"
                 ],
                 'required'
             ],
             ['order_number', 'string', 'max' => 64],
+            ['goods_code', 'string', 'max' => 50],
             ['combo_order_number', 'string', 'max' => 32],
-            [['image_id', 'goods_id', 'created_at'], 'integer']
+            [['image_id', 'created_at'], 'integer']
         ];
     }
 

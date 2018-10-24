@@ -12,8 +12,9 @@ use common\models\Functions;
  * 创建作者：
  * 创建时间：
  * @property Combo $combo
- * @property AbGoods[]|array $comboGoods
+ * @property AbGoods[]|array $abGoods
  * @property MemberOrderImage[]|array $orderImages
+ * @property MemberOrderDetail]|array $orderDetails
  * @property MemberOrder $memberOrder
  * 修改日期         修改者             BUG小功能修改申请单号
  * 注意：
@@ -596,18 +597,23 @@ class MemberOrderCombo extends Common
         return $images;
     }
 
+    public function getMember()
+    {
+        return $this->hasOne(Member::class, ['id' => 'member_id']);
+    }
+
     public function getCombo()
     {
         return $this->hasOne(Combo::class, ['id' => 'combo_id']);
     }
 
-    public function getComboGoods()
+    public function getOrderDetails()
     {
-        if ($this->combo) {
-            $goods_content = $this->combo->goods_content;
-            return AbGoods::findAll(['id' => explode(',', $goods_content)]);
-        }
-        return [];
+        return $this->hasMany(MemberOrderDetail::class, ['combo_order_number' => 'combo_order_number']);
+    }
+
+    public function getAbGoods(){
+        return $this->hasMany(AbGoods::class,['goods_code'=>'goods_code'])->via('orderDetails');
     }
 
     public function getMemberOrder()
@@ -618,5 +624,23 @@ class MemberOrderCombo extends Common
     public function getOrderImages()
     {
         return $this->hasMany(MemberOrderImage::class, ['member_order_id' => 'id'])->via('memberOrder');
+    }
+
+    public function viewShootFinishTime($format = '')
+    {
+        $timestamp = strtotime($this->shoot_finish_time);
+        if ($format) {
+            return date($format, $timestamp);
+        }
+        $weekdays = [
+            1 => '星期一',
+            2 => '星期二',
+            3 => '星期三',
+            4 => '星期四',
+            5 => '星期五',
+            6 => '星期六',
+            7 => '星期天',
+        ];
+        return date('Y-m-d', $timestamp) . ' (' . $weekdays[date('N', $timestamp)] . ') ' . date('H:i', $timestamp);
     }
 }

@@ -258,5 +258,4 @@ class MemberOrderDetail extends Common
             return Functions::formatJson(1001, $e->getMessage());
         }
     }
-
 }

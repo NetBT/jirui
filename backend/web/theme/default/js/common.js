@@ -1177,7 +1177,7 @@ var DataTable = {
                     if(oData.shoot_status == '未拍摄') {
                         html += '<a style="text-decoration:none" onClick="notShoot.startShootModal(\'' + oData.combo_order_number + '\')" href="javascript:;" title="开始拍摄"><i class="fa fa-hand-o-up"></i></a>';
                     }
-                    if(oData.shoot_status == '已拍摄'){
+                    if(oData.shoot_status == '已拍摄' || oData.shoot_status == '拍摄中'){
                         html += '<a style="text-decoration:none" onClick="notShoot.endShootModal(\'' + oData.combo_order_number + '\')" href="javascript:;" title="拍摄完成"><i class="fa fa-hand-rock-o"></i></a>';
                     }
 

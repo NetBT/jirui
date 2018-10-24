@@ -58,35 +58,32 @@ class  MemberOrderController extends CommonController
 
     /**
      * 方法描述：
-     * @param $combo_order_number
      * @return string
      * @throws NotFoundHttpException
      * 注意：
      */
     public function actionSelect()
     {
-        $get= Yii::$app->request->get();
+        $get = Yii::$app->request->get();
         $combo_order_number = $get['combo_order_number'];
-        $goods_id = $get['goods_id'];
         $comboOrder = MemberOrderCombo::findOne(['combo_order_number' => $combo_order_number]);
         if (empty($comboOrder)) {
             throw new NotFoundHttpException('这个订单没有找到');
         }
-        $abGoods = AbGoods::findOne($goods_id);
         if (empty($comboOrder->comboGoods)) {
             throw new NotFoundHttpException('这个订单没有选择商品');
         }
-        return $this->render('select', ['comboOrder' => $comboOrder,'abGoods'=>$abGoods]);
+        return $this->render('select', ['comboOrder' => $comboOrder]);
     }
 
     public function actionChoose()
     {
-        $post = Yii::$app->request->post();
-        $images_id = $post['images'];
-        $images = MemberOrderImage::findAll($images_id);
-        $params = array_merge($post, [
+        $get = Yii::$app->request->get();
+        $images_id = Yii::$app->cache->get($get['images_key']);
+        $images = MemberOrderImage::findAll(explode(',',$images_id));
+        $params = array_merge($get, [
             'images' => $images,
-            'comboOrder' => MemberOrderCombo::findOne(['combo_order_number' => $post['combo_order_number']])
+            'comboOrder' => MemberOrderCombo::findOne(['combo_order_number' => $get['combo_order_number']])
         ]);
         return $this->render('choose', $params);
     }
@@ -102,38 +99,41 @@ class  MemberOrderController extends CommonController
         $images_id = $post['images'];
         $combo_order_number = $post['combo_order_number'];
         $order_number = $post['order_number'];
-        $goods_id = $post['goods_id'];
+        $goods_code = $post['goods_code'];
         $rows = [];
-        if(empty($combo_order_number)||empty($goods_id)||empty($images_id)){
-            return $this->render('end',['msg'=>'套系ID，商品ID，图片ID不能为空！']);
+        if (empty($combo_order_number) || empty($goods_code) || empty($images_id)) {
+            return $this->render('end', ['msg' => '套系ID，商品Code，图片ID不能为空！']);
         }
         foreach ($images_id as $item) {
             $rows[] = [
                 'combo_order_number' => $combo_order_number,
                 'order_number' => $order_number,
-                'goods_id' => $goods_id,
+                'goods_code' => $goods_code,
                 'image_id' => $item,
                 'created_at' => time()
             ];
         }
         $transaction = Yii::$app->db->beginTransaction();
-        try{
-            $res = MemberOrderGoodsImages::deleteAll(['combo_order_number'=>$combo_order_number,'goods_id'=>$goods_id]);
+        try {
+            $res = MemberOrderGoodsImages::deleteAll([
+                'combo_order_number' => $combo_order_number,
+                'goods_code' => $goods_code
+            ]);
             if ($rows) {
                 Yii::$app->db->createCommand()->batchInsert(MemberOrderGoodsImages::tableName(), [
                     "combo_order_number",
                     "order_number",
-                    "goods_id",
+                    "goods_code",
                     "image_id",
                     "created_at"
                 ], $rows)->execute();
             }
-        }catch (\Exception  $exception){
+        } catch (\Exception  $exception) {
             $transaction->rollBack();
-            return $this->render('end',['msg'=>'选片失败'.$exception->getMessage()]);
+            return $this->render('end', ['msg' => '选片失败' . $exception->getMessage()]);
         }
         $transaction->commit();
-        return $this->render('end',['msg'=>'选片成功']);
+        return $this->render('end', ['msg' => '选片成功']);
     }
 
     /**
@@ -145,14 +145,18 @@ class  MemberOrderController extends CommonController
      */
     public function actionGoodsSelect($combo_order_number)
     {
+        $post = Yii::$app->request->post();
         $comboOrder = MemberOrderCombo::findOne(['combo_order_number' => $combo_order_number]);
+        $images_id = $post['images'];
         if (empty($comboOrder)) {
             throw new NotFoundHttpException('这个订单没有找到');
         }
         if (empty($comboOrder->comboGoods)) {
             throw new NotFoundHttpException('这个订单没有选择商品');
         }
-        return $this->render('goods_select', ['comboOrder' => $comboOrder]);
+        $key = md5(Yii::$app->user->identity->getId() . $combo_order_number);
+        Yii::$app->cache->set($key, implode(',', $images_id), 3600);
+        return $this->render('goods_select', ['comboOrder' => $comboOrder, 'images_key' => $key]);
     }
 
     public function actionGuadan()

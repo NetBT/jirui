@@ -82,7 +82,7 @@
             });
         },
         continueSelectModal: function (comboOrderNumber) {
-            creatIframe('<?= \yii\helpers\Url::to(['member-order/goods-select'])?>?combo_order_number=' + comboOrderNumber,'选片');
+            creatIframe('<?= \yii\helpers\Url::to(['member-order/select'])?>?combo_order_number=' + comboOrderNumber,'选片');
         },
         endSelectModal: function (comboOrderNumber) {
             var _this = this;
