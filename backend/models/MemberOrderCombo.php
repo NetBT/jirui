@@ -14,7 +14,7 @@ use common\models\Functions;
  * @property Combo $combo
  * @property AbGoods[]|array $abGoods
  * @property MemberOrderImage[]|array $orderImages
- * @property MemberOrderDetail]|array $orderDetails
+ * @property MemberOrderDetail[]|array $orderDetails
  * @property MemberOrder $memberOrder
  * 修改日期         修改者             BUG小功能修改申请单号
  * 注意：
@@ -579,21 +579,21 @@ class MemberOrderCombo extends Common
         return $info;
     }
 
-    public function inImages($image_id, $goods_id)
+    public function inImages($image_id, $goods_code)
     {
-        return isset($this->goodsImages($goods_id)[$image_id]);
+        return isset($this->goodsImages($goods_code)[$image_id]);
     }
 
-    public function goodsImages($goods_id)
+    public function goodsImages($goods_code)
     {
-        if ($this->goods_images[$goods_id]) {
-            return $this->goods_images[$goods_id];
+        if ($this->goods_images[$goods_code]) {
+            return $this->goods_images[$goods_code];
         }
         $images = MemberOrderGoodsImages::find()->where([
             'combo_order_number' => $this->combo_order_number,
-            'goods_id' => $goods_id
+            'goods_code' => $goods_code
         ])->indexBy('image_id')->all();
-        $this->goods_images[$goods_id] = $images;
+        $this->goods_images[$goods_code] = $images;
         return $images;
     }
 
@@ -612,8 +612,9 @@ class MemberOrderCombo extends Common
         return $this->hasMany(MemberOrderDetail::class, ['combo_order_number' => 'combo_order_number']);
     }
 
-    public function getAbGoods(){
-        return $this->hasMany(AbGoods::class,['goods_code'=>'goods_code'])->via('orderDetails');
+    public function getAbGoods()
+    {
+        return $this->hasMany(AbGoods::class, ['goods_code' => 'goods_code'])->via('orderDetails');
     }
 
     public function getMemberOrder()
@@ -642,5 +643,15 @@ class MemberOrderCombo extends Common
             7 => '星期天',
         ];
         return date('Y-m-d', $timestamp) . ' (' . $weekdays[date('N', $timestamp)] . ') ' . date('H:i', $timestamp);
+    }
+
+    public function allImagesSelected()
+    {
+        foreach ($this->orderDetails as $orderDetail) {
+            if ($orderDetail->getImages()->count() == 0) {
+                return false;
+            }
+        }
+        return true;
     }
 }

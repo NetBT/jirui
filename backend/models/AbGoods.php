@@ -550,6 +550,6 @@ class AbGoods extends Common
      */
     public function getComboGoodsFirstImage($combo_order_number)
     {
-        return MemberOrderGoodsImages::findOne(['combo_order_number' => $combo_order_number, 'goods_id' => $this->id]);
+        return MemberOrderGoodsImages::findOne(['combo_order_number' => $combo_order_number, 'goods_code' => $this->goods_code]);
     }
 }

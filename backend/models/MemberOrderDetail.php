@@ -1,4 +1,5 @@
 <?php
+
 namespace backend\models;
 
 use common\models\Status;
@@ -6,9 +7,19 @@ use Yii;
 use yii\base\Exception;
 use common\models\Functions;
 
+/**
+ * 功能的简述：Class MemberOrderDetail
+ * 创建作者：
+ * 创建时间：
+ * @property MemberOrderGoodsImages[]|null $images
+ * 修改日期         修改者             BUG小功能修改申请单号
+ * 注意：
+ */
 class MemberOrderDetail extends Common
 {
-
+    const CATEGORY_THUMBS = 1;//相册
+    const CATEGORY_FRAME = 2;//相框
+    const CATEGORY_ORNAMENT = 3;//摆台
     private $fieldArray = [
         "id",           //主键
         "combo_order_number",//订单套系编号
@@ -40,7 +51,8 @@ class MemberOrderDetail extends Common
      * 获取字段
      * @return array
      */
-    private function _getFields() {
+    private function _getFields()
+    {
         return $this->fieldArray;
     }
 
@@ -53,10 +65,10 @@ class MemberOrderDetail extends Common
             "data" => null
         ];
         //搜索条件
-        $searchWhere  = $this->getSearch(Yii::$app->request->post('extra_search'));//自定义搜索条件
+        $searchWhere = $this->getSearch(Yii::$app->request->post('extra_search'));//自定义搜索条件
 
         //得到文章的总数（但是还没有从数据库取数据）
-        if(isset($searchWhere['andWhere'])){
+        if (isset($searchWhere['andWhere'])) {
             $count = self::getCountByAndWhere($searchWhere['where'], $searchWhere['andWhere']);
         } else {
             $count = self::getCountByWhere($searchWhere);
@@ -68,17 +80,18 @@ class MemberOrderDetail extends Common
 
         $selectField = "";
         $fields = $this->_getFields();
-        foreach($fields as $key => $value)
-        {
-            $selectField .= ",".$value;
+        foreach ($fields as $key => $value) {
+            $selectField .= "," . $value;
         }
-        $selectField = ltrim($selectField,',');
+        $selectField = ltrim($selectField, ',');
         //排序 order
         $orderSql = 'id ASC';
-        if(isset($searchWhere['andWhere'])){
-            $returnData['data'] = static::getByAndWhere($searchWhere['where'],$searchWhere['andWhere'], $selectField, $orderSql, $this->_Pagination['offset'], $this->_Pagination['limit']);
+        if (isset($searchWhere['andWhere'])) {
+            $returnData['data'] = static::getByAndWhere($searchWhere['where'], $searchWhere['andWhere'], $selectField,
+                $orderSql, $this->_Pagination['offset'], $this->_Pagination['limit']);
         } else {
-            $returnData['data'] = static::getByWhere($searchWhere, $selectField, $orderSql, $this->_Pagination['offset'], $this->_Pagination['limit']);
+            $returnData['data'] = static::getByWhere($searchWhere, $selectField, $orderSql,
+                $this->_Pagination['offset'], $this->_Pagination['limit']);
         }
         return $returnData;
     }
@@ -90,14 +103,13 @@ class MemberOrderDetail extends Common
      * @param $search
      * @return string
      */
-    public function getSearch ($search = [])
+    public function getSearch($search = [])
     {
         $where = [];
         $andWhere = [];
-        if(!empty($search)){
+        if (!empty($search)) {
             $comboOrderNumber = isset($search['orderComboNumber']) ? $search['orderComboNumber'] : '';
-            if($comboOrderNumber)
-            {
+            if ($comboOrderNumber) {
                 $where['combo_order_number'] = $comboOrderNumber;
             }
         }
@@ -114,10 +126,10 @@ class MemberOrderDetail extends Common
      */
     public function handelInit($list = [])
     {
-        $goodsCategoryInfo = GoodsCategory::getFormArray([],'id', 'category_name');
-        foreach($list['data'] as $key => $value)
-        {
-            $list['data'][$key]['create_time'] = date('Y-m-d',strtotime($value['create_time'])).'</br>'.date('H:i:s',strtotime($value['create_time']));
+        $goodsCategoryInfo = GoodsCategory::getFormArray([], 'id', 'category_name');
+        foreach ($list['data'] as $key => $value) {
+            $list['data'][$key]['create_time'] = date('Y-m-d',
+                    strtotime($value['create_time'])) . '</br>' . date('H:i:s', strtotime($value['create_time']));
             $list['data'][$key]['goods_type'] = Status::getABGoodsTypeMap()[$value['goods_type']];
             $list['data'][$key]['goods_category'] = $goodsCategoryInfo[$value['goods_category']];
             $list['data'][$key]['deal_status'] = Status::memberOrderDetailDealStatusMap()[$value['deal_status']];
@@ -131,8 +143,8 @@ class MemberOrderDetail extends Common
      */
     public static function getMemberOrderComboNum()
     {
-        $num = date('YmdHis').'MOC'.Common::getBusinessId();
-        if(static::getOneByWhere(['combo_order_number' => $num])){
+        $num = date('YmdHis') . 'MOC' . Common::getBusinessId();
+        if (static::getOneByWhere(['combo_order_number' => $num])) {
             self::getMemberOrderComboNum();
         }
         return $num;
@@ -153,14 +165,17 @@ class MemberOrderDetail extends Common
 
         $orderDetailInfo = self::getOneInfoById($orderDetailId);
 
-        $employeeInfo = Employee::getFormArray(['status' => Status::EMPLOYEE_STATUS_ACTIVE,'alliance_business_id' => Common::getBusinessId()],'id','employee_name');
+        $employeeInfo = Employee::getFormArray([
+            'status' => Status::EMPLOYEE_STATUS_ACTIVE,
+            'alliance_business_id' => Common::getBusinessId()
+        ], 'id', 'employee_name');
         $trans = Yii::$app->db->beginTransaction();
-        try{
-            if(!$type) {
+        try {
+            if (!$type) {
                 throw new Exception('未指定类型');
             }
 
-            if(!$orderDetailId) {
+            if (!$orderDetailId) {
                 throw new Exception('未指定商品');
             }
 
@@ -168,17 +183,17 @@ class MemberOrderDetail extends Common
             $dealUser = $orderComboInfo['deal_user'];
             $dealUserName = !empty($dealUser) ? $employeeInfo[$dealUser] : '';
             //判断是否是同一个员工操作
-            if(!empty($dealUser) && ($dealUser != Yii::$app->user->getId())) {
-                throw new Exception('该订单只由'.$dealUserName.'操作');
+            if (!empty($dealUser) && ($dealUser != Yii::$app->user->getId())) {
+                throw new Exception('该订单只由' . $dealUserName . '操作');
             }
 
             $where['id'] = $orderDetailId;
-            switch ($type){
+            switch ($type) {
                 case Status::MEMBER_ORDER_DETAIL_DEAL_STATUS_FC://返厂处理
                     //1.判断order_combo里面的商品是否全部理件
                     $data['deal_status'] = $afterStatus;
                     $data['update_user'] = Yii::$app->user->getId();
-                    $res = static::updateDataWithLog($data,$where);
+                    $res = static::updateDataWithLog($data, $where);
                     if ($res === false) {
                         throw new Exception('操作失败');
                     }
@@ -189,7 +204,7 @@ class MemberOrderDetail extends Common
                     //2.判断order_combo里面的商品是否全部理件
                     $data['deal_status'] = $afterStatus;
                     $data['update_user'] = Yii::$app->user->getId();
-                    $res = static::updateDataWithLog($data,$where);
+                    $res = static::updateDataWithLog($data, $where);
                     if ($res === false) {
                         throw new Exception('操作失败');
                     }
@@ -197,11 +212,12 @@ class MemberOrderDetail extends Common
                     $ABGoodsModel = new AbGoods();
                     $goodsInfo = AbGoods::getOneByWhere(['goods_code' => $orderDetailInfo['goods_code']]);
                     $afterGoodsNum = intval($goodsInfo['goods_num']) - intval($orderDetailInfo['goods_num']);
-                    if($afterGoodsNum < 0){
+                    if ($afterGoodsNum < 0) {
                         throw new Exception('该商品库存不足');
                     }
 
-                    $res = $ABGoodsModel->updateDataWithLog(['goods_num' => $afterGoodsNum],['goods_code' => $orderDetailInfo['goods_code']]);
+                    $res = $ABGoodsModel->updateDataWithLog(['goods_num' => $afterGoodsNum],
+                        ['goods_code' => $orderDetailInfo['goods_code']]);
                     if ($res === false) {
                         throw new Exception('库存更新失败');
                     }
@@ -232,22 +248,23 @@ class MemberOrderDetail extends Common
             }
 
             //总体判断order_combo是否需要更改状态
-            $dealStatus = self::getByWhere(['combo_order_number' => $orderDetailInfo['combo_order_number']],'deal_status');
+            $dealStatus = self::getByWhere(['combo_order_number' => $orderDetailInfo['combo_order_number']],
+                'deal_status');
             $dealStatusArray = [];
-            foreach ($dealStatus as $key => $value)
-            {
-                array_push($dealStatusArray,$value['deal_status']);
+            foreach ($dealStatus as $key => $value) {
+                array_push($dealStatusArray, $value['deal_status']);
             }
             $dealStatusArray = array_unique($dealStatusArray);
             $count = count($dealStatusArray);
             $comboData['deal_user'] = Yii::$app->user->getId();
             $comboData['deal_status'] = Status::MEMBER_ORDER_DEAL_STATUS_ING;
             $comboData['update_time'] = date('Y-m-d H:i:s');
-            if(($count == 1) && ($dealStatusArray[0] == Status::MEMBER_ORDER_DETAIL_DEAL_STATUS_WC)) {
+            if (($count == 1) && ($dealStatusArray[0] == Status::MEMBER_ORDER_DETAIL_DEAL_STATUS_WC)) {
                 $comboData['deal_status'] = Status::MEMBER_ORDER_DEAL_STATUS_YES;
             }
             $orderComboModel = new MemberOrderCombo();
-            $res = $orderComboModel->updateDataWithLog($comboData,['combo_order_number' => $orderDetailInfo['combo_order_number']]);
+            $res = $orderComboModel->updateDataWithLog($comboData,
+                ['combo_order_number' => $orderDetailInfo['combo_order_number']]);
             if ($res === false) {
                 throw new Exception('操作失败');
             }
@@ -257,5 +274,24 @@ class MemberOrderDetail extends Common
             $trans->rollBack();
             return Functions::formatJson(1001, $e->getMessage());
         }
+    }
+
+    /**
+     * 方法描述：
+     * @param $combo_order_number
+     * @return MemberOrderGoodsImages
+     * 注意：
+     */
+    public function getComboGoodsFirstImage($combo_order_number)
+    {
+        return MemberOrderGoodsImages::findOne([
+            'combo_order_number' => $combo_order_number,
+            'goods_code' => $this->goods_code
+        ]);
+    }
+
+    public function getImages()
+    {
+        return $this->hasMany(MemberOrderGoodsImages::class, ['goods_code' => 'goods_code']);
     }
 }
