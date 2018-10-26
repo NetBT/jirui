@@ -74,7 +74,8 @@ class  MemberOrderController extends CommonController
         if (empty($comboOrder->orderDetails)) {
             throw new NotFoundHttpException('这个订单没有选择商品');
         }
-        return $this->render('select', ['comboOrder' => $comboOrder]);
+        return $this->render('select',
+            ['comboOrder' => $comboOrder, 'errors' => Yii::$app->session->getFlash('select_errors')]);
     }
 
     public function actionChoose()
@@ -168,7 +169,7 @@ class  MemberOrderController extends CommonController
             return $this->render('end', ['msg' => '选片失败' . $exception->getMessage()]);
         }
         $transaction->commit();
-        return $this->render('end', ['msg' => '选片成功','comboOrder'=>$comboOrder]);
+        return $this->render('end', ['msg' => '选片成功', 'comboOrder' => $comboOrder]);
     }
 
     /**
@@ -183,11 +184,20 @@ class  MemberOrderController extends CommonController
         $post = Yii::$app->request->post();
         $comboOrder = MemberOrderCombo::findOne(['combo_order_number' => $combo_order_number]);
         $images_id = $post['images'];
+        if (!is_array($images_id) || empty($images_id)) {
+            Yii::$app->session->addFlash('select_errors', '请选择至少一张图片！');
+            return $this->redirect(Url::to([
+                'member-order/select',
+                'combo_order_number' => $comboOrder->combo_order_number
+            ]));
+        }
         if (empty($comboOrder)) {
-            throw new NotFoundHttpException('这个订单没有找到');
+            Yii::$app->session->addFlash('select_errors', '这个订单没有找到');
+            return $this->redirect(Url::to(['member-order/select', 'combo_order_number' => $combo_order_number]));
         }
         if (empty($comboOrder->abGoods)) {
-            throw new NotFoundHttpException('这个订单没有选择商品');
+            Yii::$app->session->addFlash('select_errors', '这个套系订单没有关联商品');
+            return $this->redirect(Url::to(['member-order/select', 'combo_order_number' => $combo_order_number]));
         }
         $key = md5(Yii::$app->user->identity->getId() . $combo_order_number);
         Yii::$app->cache->set($key, implode(',', $images_id), 3600);

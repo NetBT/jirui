@@ -6,7 +6,18 @@
 ?>
 <div class="main-page col-xs-12">
     <div class="main-header col-xs-12">
-        <div class="header-title col-xs-12"><b>选择商品</b>List of Member Order</div>
+        <div class="header-title col-xs-12"><b>选择商品</b></div>
+        <div class="col-xs-12"><h4 class="col-xs-12">订单#<?= $comboOrder->order_number ?></h4></div>
+        <div class="col-xs-12">
+            <div class="col-xs-2">拍摄时间：</div>
+            <div class="col-xs-3 text-info"><?= $comboOrder->viewShootFinishTime() ?></div>
+            <div class="col-xs-2">顾客称呼：</div>
+            <div class="col-xs-2 text-info"><?= $comboOrder->member->name ?></div>
+        </div>
+        <div class="col-xs-12">
+            <div class="col-xs-2">订单状态：</div>
+            <div class="col-xs-2 text-info">正在选片中</div>
+        </div>
     </div>
     <div class="main-body col-xs-12">
         <p class="fancybox-thumbs__list">

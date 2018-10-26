@@ -415,6 +415,9 @@ class MemberOrderCombo extends Common
                     if (!empty($selectPhoneUser) && ($selectPhoneUser != Yii::$app->user->getId())) {
                         throw new Exception('该订单只由' . $selectPhoneUserName . '操作');
                     }
+                    if(empty(MemberOrderGoodsImages::findOne($where))){
+                        throw new Exception('当前订单没有上传图片，请在上传图片后开始选片');
+                    }
                     $data['select_status'] = $afterStatus;
                     if ($afterStatus == Status::MEMBER_ORDER_SHOOT_STATUS_YES) {
                         $data['select_time'] = date('Y-m-d H:i:s');

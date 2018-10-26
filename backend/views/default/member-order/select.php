@@ -16,25 +16,37 @@ $i = 0;
             <div class="col-xs-2">顾客称呼：</div>
             <div class="col-xs-2 text-info"><?= $comboOrder->member->name ?></div>
         </div>
-        <div class="col-sx-12">
+        <div class="col-xs-12">
             <div class="col-xs-2">订单状态：</div>
             <div class="col-xs-2 text-info">正在选片中</div>
+            <div class="col-xs-2 col-xs-offset-10">
+                <button id="save" type="submit" class="btn btn-sm btn-primary">粗选完成</button>
+            </div>
         </div>
     </div>
     <div class="main-body col-xs-12">
+        <? if ($errors): ?>
+            <div class="col-sm-9 text-danger">
+                <ul>
+                    <? foreach ($errors as $error): ?>
+                        <li><?= $error ?></li>
+                    <? endforeach; ?>
+                </ul>
+            </div>
+        <? endif; ?>
         <div class="fancybox-thumbs__list">
-            <form method="post" action="<?= \yii\helpers\Url::to([
+            <form id="main-form" method="post" action="<?= \yii\helpers\Url::to([
                 'member-order/goods-select',
                 'combo_order_number' => $comboOrder->combo_order_number
             ]) ?>">
-                <button type="submit" class="btn btn-sm btn-primary">粗选完成</button>
                 <div id="imagelist">
                     <? foreach ($comboOrder->memberOrder->images as $image): ?>
-                        <div class="form-group col-sm-3">
+                        <div class="form-group col-sm-3" style="max-width:280px">
                             <div class="col-sm-12 clear-padding">
                                 <a href="<?= $image->getImageUrl() ?>"
                                    data-fancybox style="width:240px;height:160px;max-width: 100%;">
-                                    <img src="<?= $image->getImageUrl() ?>" style="max-width: 100%;max-height:100%"/>
+                                    <img src="<?= $image->getImageUrl() ?>"
+                                         style="margin:auto;max-width: 100%;max-height:100%"/>
                                 </a>
                             </div>
                             <span class="combo-select btn btn-sm btn-primary col-sm-12 clear-padding"
@@ -57,6 +69,9 @@ $i = 0;
             $combo.find('i').toggleClass('fa-plus fa-minus');
             $combo.toggleClass('btn-primary btn-danger');
             $combo.find('input').prop('checked', $combo.hasClass('btn-danger'));
+        });
+        $('#save').click(function () {
+            $('#main-form').submit();
         });
     })
 </script>
