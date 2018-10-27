@@ -12,10 +12,11 @@ use common\models\Functions;
  * 创建作者：
  * 创建时间：
  * @property Combo $combo
- * @property AbGoods[]|array $abGoods
- * @property MemberOrderImage[]|array $orderImages
- * @property MemberOrderDetail[]|array $orderDetails
+ * @property AbGoods[]|null $abGoods
+ * @property MemberOrderImage[]|null $orderImages
+ * @property MemberOrderDetail[]|null $orderDetails
  * @property MemberOrder $memberOrder
+ * @property MemberOrderImage[]|null $images
  * 修改日期         修改者             BUG小功能修改申请单号
  * 注意：
  */
@@ -415,7 +416,7 @@ class MemberOrderCombo extends Common
                     if (!empty($selectPhoneUser) && ($selectPhoneUser != Yii::$app->user->getId())) {
                         throw new Exception('该订单只由' . $selectPhoneUserName . '操作');
                     }
-                    if(empty(MemberOrderGoodsImages::findOne($where))){
+                    if (empty(MemberOrderGoodsImages::findOne($where))) {
                         throw new Exception('当前订单没有上传图片，请在上传图片后开始选片');
                     }
                     $data['select_status'] = $afterStatus;
@@ -600,6 +601,21 @@ class MemberOrderCombo extends Common
         return $images;
     }
 
+    public function getImages()
+    {
+        return $this->hasMany(MemberOrderImage::class, ['id' => 'image_id'])->via('orderDetailImages');
+    }
+
+    public function getOrderDetailImages()
+    {
+        return $this->hasMany(MemberOrderGoodsImages::class, ['combo_order_number' => 'combo_order_number']);
+    }
+
+    public function getMemberOrder()
+    {
+        return $this->hasOne(MemberOrder::class, ['order_number' => 'order_number']);
+    }
+
     public function getMember()
     {
         return $this->hasOne(Member::class, ['id' => 'member_id']);
@@ -618,11 +634,6 @@ class MemberOrderCombo extends Common
     public function getAbGoods()
     {
         return $this->hasMany(AbGoods::class, ['goods_code' => 'goods_code'])->via('orderDetails');
-    }
-
-    public function getMemberOrder()
-    {
-        return $this->hasOne(MemberOrder::class, ['order_number' => 'order_number']);
     }
 
     public function getOrderImages()

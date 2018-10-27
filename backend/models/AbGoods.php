@@ -16,6 +16,16 @@ use yii\data\Pagination;
  */
 class AbGoods extends Common
 {
+    const CATEGORY_THUMBS = 1;//相册
+    const CATEGORY_FRAME = 2;//相框
+    const CATEGORY_ORNAMENT = 3;//摆台
+
+    static $category_name = [
+        self::CATEGORY_THUMBS => 'THUMBS',
+        self::CATEGORY_FRAME => 'FRAME',
+        self::CATEGORY_ORNAMENT => 'ORNAMENT',
+    ];
+
     public static function tableName()
     {
         return '{{%ab_goods}}';
@@ -550,6 +560,14 @@ class AbGoods extends Common
      */
     public function getComboGoodsFirstImage($combo_order_number)
     {
-        return MemberOrderGoodsImages::findOne(['combo_order_number' => $combo_order_number, 'goods_code' => $this->goods_code]);
+        return MemberOrderGoodsImages::findOne([
+            'combo_order_number' => $combo_order_number,
+            'goods_code' => $this->goods_code
+        ]);
+    }
+
+    public function getCategoryEnName()
+    {
+        return isset(self::$category_name[$this->goods_category]) ? self::$category_name[$this->goods_category] : 'UNKNOWN';
     }
 }

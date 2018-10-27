@@ -20,6 +20,13 @@ class MemberOrderDetail extends Common
     const CATEGORY_THUMBS = 1;//相册
     const CATEGORY_FRAME = 2;//相框
     const CATEGORY_ORNAMENT = 3;//摆台
+
+    static $category_name = [
+        self::CATEGORY_THUMBS => 'THUMBS',
+        self::CATEGORY_FRAME => 'FRAME',
+        self::CATEGORY_ORNAMENT => 'ORNAMENT',
+    ];
+
     private $fieldArray = [
         "id",           //主键
         "combo_order_number",//订单套系编号
@@ -292,6 +299,11 @@ class MemberOrderDetail extends Common
 
     public function getImages()
     {
-        return $this->hasMany(MemberOrderGoodsImages::class, ['goods_code' => 'goods_code']);
+        return $this->hasMany(MemberOrderGoodsImages::class, ['goods_code' => 'goods_code'])->with('image');
+    }
+
+    public function getCategoryEnName()
+    {
+        return isset(self::$category_name[$this->goods_category]) ? self::$category_name[$this->goods_category] : 'UNKNOWN';
     }
 }

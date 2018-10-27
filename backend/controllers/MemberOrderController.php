@@ -8,6 +8,7 @@ use backend\models\MemberOrderCombo;
 use backend\models\MemberOrderDetail;
 use backend\models\MemberOrderGoodsImages;
 use backend\models\MemberOrderImage;
+use common\models\Functions;
 use Yii;
 use yii\bootstrap\ActiveForm;
 use backend\models\AbGoods;
@@ -202,6 +203,45 @@ class  MemberOrderController extends CommonController
         $key = md5(Yii::$app->user->identity->getId() . $combo_order_number);
         Yii::$app->cache->set($key, implode(',', $images_id), 3600);
         return $this->render('goods_select', ['comboOrder' => $comboOrder, 'images_key' => $key]);
+    }
+
+    public function actionDownloadImages($combo_order_number)
+    {
+        $this->returnJson();
+        $comboOrder = MemberOrderCombo::findOne([
+            'combo_order_number' => $combo_order_number
+        ]);
+        if (empty($comboOrder)) {
+            throw new \Exception('此订单不存在！');
+        }
+        $details = $comboOrder->orderDetails;
+        if (empty(MemberOrderGoodsImages::findOne(['combo_order_number' => $combo_order_number]))) {
+            throw new \Exception('此订单没有图片');
+        }
+        $path = Yii::$app->params['download_path'] . date('Y-m-d') . "/$combo_order_number.zip";
+        $filename = Yii::getAlias('@backend-web/' . $path);
+        Functions::mkdirs(dirname($filename));
+        $zip = new \ZipArchive();
+        if ($zip->open($filename, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
+            throw new \Exception('压缩包不存在');
+        }
+        foreach ($details as $detail) {
+            $images = $detail->images;
+            if ($images) {
+                $_dir = $detail->goods_code . '_' . $detail->getCategoryEnName() . '_' . $detail->goods_size;
+                $zip->addEmptyDir($_dir);
+                foreach ($images as $image) {
+                    $attachfile = $image->image->getFileSavePath();
+                    if (file_exists($attachfile)) {
+                        $zip->addFile($attachfile,$_dir.'/'.basename($attachfile));
+                    }
+                }
+            }
+        }
+        if (!file_exists($filename)) {
+            throw new \Exception('压缩包创建失败');
+        }
+        return ['code' => 1000, 'data' => Url::to('/' . $path)];
     }
 
     public function actionGuadan()

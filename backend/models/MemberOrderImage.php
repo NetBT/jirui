@@ -9,6 +9,13 @@ use yii\behaviors\TimestampBehavior;
 use yii\db\ActiveRecord;
 use yii\web\UploadedFile;
 
+/**
+ * 功能的简述：Class MemberOrderImage
+ * 创建作者：
+ * 创建时间：
+ * 修改日期         修改者             BUG小功能修改申请单号
+ * 注意：
+ */
 class MemberOrderImage extends Common
 {
     public $imageFile;
@@ -83,9 +90,9 @@ class MemberOrderImage extends Common
                 $data['size'] = $this->imageFile->size;
                 $this->load($data, '');
                 if ($this->validate()) {
-                    $path = $this->getPath();
+                    $path = $this->getFileSavePath();
                     Functions::mkdirs(dirname($path));
-                    if (!$this->imageFile->saveAs($this->getPath())) {
+                    if (!$this->imageFile->saveAs($this->getFileSavePath())) {
                         throw new Exception($this->imageFile->error);
                     }
                     if (!$this->save(false)) {
@@ -105,7 +112,7 @@ class MemberOrderImage extends Common
         }
     }
 
-    public function getPath()
+    public function getFileSavePath()
     {
         return Yii::getAlias('@webroot/' . $this->path . $this->filename);
     }
