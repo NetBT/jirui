@@ -10,6 +10,7 @@ use backend\models\MemberOrderGoodsImages;
 use backend\models\MemberOrderImage;
 use common\models\Functions;
 use Yii;
+use yii\base\Exception;
 use yii\bootstrap\ActiveForm;
 use backend\models\AbGoods;
 use yii\helpers\Url;
@@ -61,6 +62,7 @@ class  MemberOrderController extends CommonController
     /**
      * 方法描述：
      * @return string
+     * @throws Exception
      * @throws NotFoundHttpException
      * 注意：
      */
@@ -70,10 +72,10 @@ class  MemberOrderController extends CommonController
         $combo_order_number = $get['combo_order_number'];
         $comboOrder = MemberOrderCombo::findOne(['combo_order_number' => $combo_order_number]);
         if (empty($comboOrder)) {
-            throw new NotFoundHttpException('这个订单没有找到');
+            throw new Exception('这个订单没有找到');
         }
         if (empty($comboOrder->orderDetails)) {
-            throw new NotFoundHttpException('这个订单没有选择商品');
+            throw new Exception('这个订单没有选择商品');
         }
         return $this->render('select',
             ['comboOrder' => $comboOrder, 'errors' => Yii::$app->session->getFlash('select_errors')]);
@@ -205,25 +207,37 @@ class  MemberOrderController extends CommonController
         return $this->render('goods_select', ['comboOrder' => $comboOrder, 'images_key' => $key]);
     }
 
-    public function actionDownloadImages($combo_order_number)
+    /**
+     * 方法描述：获得下载链接
+     * @param $combo_order_number
+     * @return array
+     * @throws Exception
+     * 注意:
+     */
+    public function actionDownloadImages()
     {
         $this->returnJson();
+        $combo_order_number = Yii::$app->request->post('combo_order_number');
+        if(empty($combo_order_number)){
+            throw new Exception('订单号不能为空');
+        }
         $comboOrder = MemberOrderCombo::findOne([
             'combo_order_number' => $combo_order_number
         ]);
         if (empty($comboOrder)) {
-            throw new \Exception('此订单不存在！');
+            throw new Exception('此订单不存在！');
         }
+
         $details = $comboOrder->orderDetails;
         if (empty(MemberOrderGoodsImages::findOne(['combo_order_number' => $combo_order_number]))) {
-            throw new \Exception('此订单没有图片');
+            throw new Exception('此订单没有图片');
         }
         $path = Yii::$app->params['download_path'] . date('Y-m-d') . "/$combo_order_number.zip";
         $filename = Yii::getAlias('@backend-web/' . $path);
         Functions::mkdirs(dirname($filename));
         $zip = new \ZipArchive();
         if ($zip->open($filename, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
-            throw new \Exception('压缩包不存在');
+            throw new Exception('压缩包不存在');
         }
         foreach ($details as $detail) {
             $images = $detail->images;
@@ -233,15 +247,15 @@ class  MemberOrderController extends CommonController
                 foreach ($images as $image) {
                     $attachfile = $image->image->getFileSavePath();
                     if (file_exists($attachfile)) {
-                        $zip->addFile($attachfile,$_dir.'/'.basename($attachfile));
+                        $zip->addFile($attachfile, $_dir . '/' . basename($attachfile));
                     }
                 }
             }
         }
         if (!file_exists($filename)) {
-            throw new \Exception('压缩包创建失败');
+            throw new Exception('压缩包创建失败');
         }
-        return ['code' => 1000, 'data' => Url::to('/' . $path)];
+        return Functions::formatJson(1000, '', ['uri' => Url::to('/' . $path)]);
     }
 
     public function actionGuadan()

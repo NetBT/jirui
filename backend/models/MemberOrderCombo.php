@@ -17,6 +17,7 @@ use common\models\Functions;
  * @property MemberOrderDetail[]|null $orderDetails
  * @property MemberOrder $memberOrder
  * @property MemberOrderImage[]|null $images
+ * @property Employee $compositeUser
  * 修改日期         修改者             BUG小功能修改申请单号
  * 注意：
  */
@@ -416,7 +417,7 @@ class MemberOrderCombo extends Common
                     if (!empty($selectPhoneUser) && ($selectPhoneUser != Yii::$app->user->getId())) {
                         throw new Exception('该订单只由' . $selectPhoneUserName . '操作');
                     }
-                    if (empty(MemberOrderGoodsImages::findOne($where))) {
+                    if (empty(MemberOrder::findOne(['order_number' => $currentInfo['order_number']])->images)) {
                         throw new Exception('当前订单没有上传图片，请在上传图片后开始选片');
                     }
                     $data['select_status'] = $afterStatus;
@@ -667,5 +668,10 @@ class MemberOrderCombo extends Common
             }
         }
         return true;
+    }
+
+    public function getCompositeUser()
+    {
+        return $this->hasOne(Employee::class, ['id' => 'composite_user']);
     }
 }

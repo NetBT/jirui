@@ -77,7 +77,7 @@
                     afterStatus: <?= \common\models\Status::MEMBER_ORDER_SELECT_STATUS_ING?>,
                 };
                 ajaxSubmit(_this.startSelectUrl, params, function () {
-                    creatIframe('<?= \yii\helpers\Url::to(['membber-order/select'])?>?member_order_number=' + comboOrderNumber,'选片');
+                    creatIframe('<?= \yii\helpers\Url::to(['member-order/select'])?>?combo_order_number=' + comboOrderNumber,'选片');
                 });
             });
         },

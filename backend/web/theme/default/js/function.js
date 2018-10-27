@@ -66,7 +66,7 @@ function ajaxSubmitForm(formId, url, method='POST') {
  * @param params
  * @param callBackFunc
  */
-function ajaxSubmit(url, params, callBackFunc) {
+function ajaxSubmit(url, params, callBackFunc, handleResponseFunc) {
     if (callBackFunc === undefined) {
         callBackFunc = '';
     }
@@ -89,6 +89,9 @@ function ajaxSubmit(url, params, callBackFunc) {
             if(data.code == 1000)
             {
                 callBackFunction  = callBackFunc;
+            }
+            if(handleResponseFunc){
+                handleResponseFunc(data);
             }
             layer.msg(data.message,{icon:6,time:2000},callBackFunction);
         },

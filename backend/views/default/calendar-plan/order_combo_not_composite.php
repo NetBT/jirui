@@ -59,6 +59,15 @@
         }
     }
 
+    function downloadImages(comboOrderNumber){
+        let url = '<?= \yii\helpers\Url::to(['member-order/download-images'])?>';
+        let params = {combo_order_number: comboOrderNumber};
+        ajaxSubmit(url,params,'',function (data) {
+            let uri = data.data['uri'];
+            window.open(uri);
+        })
+    }
+
     var notComposite = {
         url : '<?= \yii\helpers\Url::to(['calendar-plan/change-combo-order-status'])?>',
         designModal : function(comboOrderNumber)
@@ -73,6 +82,7 @@
                 };
                 ajaxSubmit(_this.url, params, function () {
                     DataTable.drawTable();
+                    downloadImages(comboOrderNumber);
                 });
             });
         },
