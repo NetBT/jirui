@@ -192,7 +192,7 @@ class  MemberOrderController extends CommonController
             return $this->redirect(Url::to(['member-order/select', 'combo_order_number' => $combo_order_number]));
         }
         $key = md5(Yii::$app->user->identity->getId() . $combo_order_number);
-        Yii::$app->cache->set($key, implode(',', $images_id), 3600);
+        Yii::$app->cache->set($key, implode(',', $images_id), 86400);
         $default_image = MemberOrderImage::findOne($images_id[0]);
         return $this->render('goods_select',
             [

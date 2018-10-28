@@ -289,7 +289,7 @@
         },
 
         thumbs: {
-            autoStart: false, // Display thumbnails on opening
+            autoStart: true, // Display thumbnails on opening
             hideOnClose: true, // Hide thumbnail grid when closing animation starts
             parentEl: ".fancybox-container", // Container is injected into this element
             axis: "y" // Vertical (y) or horizontal (x) scrolling
@@ -4657,7 +4657,7 @@
                 "</button>"
         },
         slideShow: {
-            autoStart: false,
+            autoStart: true,
             speed: 3000,
             progress: true
         }
@@ -5125,8 +5125,8 @@
                         return false;
                     }
                     self.create();
+                    self.instance.jumpTo(0);
                     self.update();
-                    $(this).closest('a').remove();
                     $('#imagelist a').eq(index).remove();
                 });
             }
