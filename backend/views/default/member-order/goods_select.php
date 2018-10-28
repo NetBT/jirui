@@ -2,6 +2,7 @@
 /**
  * @var $this \yii\web\View
  * @var $comboOrder \backend\models\MemberOrderCombo
+ * @var $default_image \backend\models\MemberOrderImage
  */
 ?>
 <div class="main-page col-xs-12">
@@ -33,7 +34,8 @@
                 <img src="<?= $goodsDetail->getComboGoodsFirstImage($comboOrder->combo_order_number)->getImageUrl() ?>" width="240"
                      height="160"/>
             <? else: ?>
-                <div style="width:240px;height:160px">empty!</div>
+                <img src="<?= $default_image->getImageUrl() ?>" width="240"
+                     height="160"/>
             <? endif; ?>
             <div><?= $goodsDetail->goods_name ?></div>
         </div>

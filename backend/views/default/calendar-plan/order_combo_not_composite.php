@@ -64,7 +64,9 @@
         let params = {combo_order_number: comboOrderNumber};
         ajaxSubmit(url,params,'',function (data) {
             let uri = data.data['uri'];
-            window.open(uri);
+            if(data.code==1000 && uri){
+                window.open(uri);
+            }
         })
     }
 
@@ -85,6 +87,10 @@
                     downloadImages(comboOrderNumber);
                 });
             });
+        },
+        downloadImages : function(comboOrderNumber)
+        {
+            downloadImages(comboOrderNumber);
         },
         truingModal : function(comboOrderNumber)
         {

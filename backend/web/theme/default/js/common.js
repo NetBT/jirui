@@ -1326,6 +1326,7 @@ var DataTable = {
                     }
                     if(oData.composite_status == '精修') {
                         html = '<a style="text-decoration:none" onClick="notComposite.truingModal(\'' + oData.combo_order_number + '\')" href="javascript:;" title="设计"><i class="fa fa-hand-o-right"></i></a>';
+                        html += '<a style="text-decoration:none" onClick="notComposite.downloadImages(\'' + oData.combo_order_number + '\')" href="javascript:;" title="下载图片"><i class="fa fa-download"></i></a>';
                     }
                     if(oData.composite_status == '设计') {
                         html = '<a style="text-decoration:none" onClick="notComposite.goBackModal(\'' + oData.combo_order_number + '\')" href="javascript:;" title="返厂"><i class="fa fa-hand-o-left"></i></a>';

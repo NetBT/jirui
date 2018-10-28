@@ -49,7 +49,7 @@ $i = 0;
                         <a href="<?= $image->getImageUrl() ?>" data-fancybox="images"
                            style="width:240px;height:160px;max-width: 240px;max-height: 160px;">
                             <img src="<?= $image->getImageUrl() ?>"
-                                 style="margin:auto;max-width: 100%;max-height: 100%;"/>
+                                 style="margin:auto;height:100%;width:auto;max-width: 100%;max-height: 100%;"/>
                             <input class="hide" type="checkbox" name="images[]" checked value="<?= $image->id ?>">
                         </a>
                     <? endforeach; ?>

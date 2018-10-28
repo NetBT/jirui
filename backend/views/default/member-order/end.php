@@ -1,7 +1,8 @@
 <?
 /**
  * @var $this \yii\web\View
- *
+ * @var $comboOrder \backend\models\MemberOrderCombo
+ * @var $msg string
  */
 ?>
 <div class="main-page col-xs-12">

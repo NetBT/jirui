@@ -299,7 +299,8 @@ class MemberOrderDetail extends Common
 
     public function getImages()
     {
-        return $this->hasMany(MemberOrderGoodsImages::class, ['goods_code' => 'goods_code'])->with('image');
+        return $this->hasMany(MemberOrderGoodsImages::class, ['goods_code' => 'goods_code'])
+            ->where(['combo_order_number' => $this->combo_order_number])->with('image');
     }
 
     public function getCategoryEnName()

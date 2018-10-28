@@ -663,7 +663,7 @@ class MemberOrderCombo extends Common
     public function allImagesSelected()
     {
         foreach ($this->orderDetails as $orderDetail) {
-            if ($orderDetail->getImages()->count() == 0) {
+            if (empty($orderDetail->images)) {
                 return false;
             }
         }
