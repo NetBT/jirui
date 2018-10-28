@@ -65,7 +65,27 @@ $i = 0;
             $('#imagelist a').fancybox();
         });
         $('#save').click(function () {
-            $('#main-form').submit();
+            // $('#main-form').submit();
+            let url = $('#main-form').attr('action');
+            let params = $('#main-form').serialize();
+            ajaxSubmit(url,params,'',function (data) {
+                if(data.code==1000 && data.data['end']){
+                    layer.confirm('您已完成本套系所有产品的选片，点击确定将状态改为选片完成!',function(){
+                        var comboOrderNumber = "<?= $comboOrder->combo_order_number?>";
+                        layer.confirm('【' + comboOrderNumber + '】该订单选片完成？', function (index) {
+                            var params = {
+                                comboOrderNumber: comboOrderNumber,
+                                type: <?= \common\models\Status::MEMBER_ORDER_COMBO_NOT_SELECT?>,
+                                beforeStatus: <?= \common\models\Status::MEMBER_ORDER_SELECT_STATUS_ING?>,
+                                afterStatus: <?= \common\models\Status::MEMBER_ORDER_SELECT_STATUS_YES?>,
+                            };
+                            ajaxSubmit('<?= \yii\helpers\Url::to(['calendar-plan/change-combo-order-status'])?>', params, function () {
+                                removeIframe();
+                            });
+                        });
+                    });
+                }
+            })
         });
     })
 </script>

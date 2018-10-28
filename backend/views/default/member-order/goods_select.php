@@ -4,7 +4,16 @@
  * @var $comboOrder \backend\models\MemberOrderCombo
  * @var $default_image \backend\models\MemberOrderImage
  */
+$this->registerCss(<<<TAG
+.image-item{
+    max-width: 240px;
+    max-height: 160px;
+    width: auto;
+}
+TAG
+)
 ?>
+
 <div class="main-page col-xs-12">
     <div class="main-header col-xs-12">
         <div class="header-title col-xs-12"><b>选择商品</b></div>
@@ -21,25 +30,26 @@
         </div>
     </div>
     <div class="main-body col-xs-12">
-        <p class="fancybox-thumbs__list">
+        <div class="fancybox-thumbs__list">
             <? foreach ($comboOrder->orderDetails as $goodsDetail): ?>
-        <div class="thumbnail" style="cursor: pointer;" title="<?= $goodsDetail->goods_name ?>"
-             data-uri="<?= \yii\helpers\Url::to([
-                 'member-order/choose',
-                 'combo_order_number' => $comboOrder->combo_order_number,
-                 'goods_code' => $goodsDetail->goods_code,
-                 'images_key' => $images_key
-             ]) ?>">
-            <? if ($goodsDetail->getComboGoodsFirstImage($comboOrder->combo_order_number)): ?>
-                <img src="<?= $goodsDetail->getComboGoodsFirstImage($comboOrder->combo_order_number)->getImageUrl() ?>" width="240"
-                     height="160"/>
-            <? else: ?>
-                <img src="<?= $default_image->getImageUrl() ?>" width="240"
-                     height="160"/>
-            <? endif; ?>
-            <div><?= $goodsDetail->goods_name ?></div>
+                <div class="thumbnail" style="cursor: pointer;width: 250px; height:190px;"
+                     title="<?= $goodsDetail->goods_name ?>"
+                     data-uri="<?= \yii\helpers\Url::to([
+                         'member-order/choose',
+                         'combo_order_number' => $comboOrder->combo_order_number,
+                         'goods_code' => $goodsDetail->goods_code,
+                         'images_key' => $images_key
+                     ]) ?>">
+                    <? if ($goodsDetail->getComboGoodsFirstImage($comboOrder->combo_order_number)): ?>
+                        <img src="<?= $goodsDetail->getComboGoodsFirstImage($comboOrder->combo_order_number)->getImageUrl() ?>"
+                             class="image-item"/>
+                    <? else: ?>
+                        <img src="<?= $default_image->getImageUrl() ?>" class="image-item"/>
+                    <? endif; ?>
+                    <div class="text-center"><?= $goodsDetail->goods_name ?></div>
+                </div>
+            <? endforeach; ?>
         </div>
-        <? endforeach; ?>
     </div>
 </div>
 <script>

@@ -97,12 +97,14 @@ class  MemberOrderController extends CommonController
     }
 
     /**
-     * @return string
+     * 方法描述：
+     * @return array
      * @throws \yii\db\Exception
      * 注意：
      */
     public function actionAccept()
     {
+        $this->returnJson();
         $post = Yii::$app->request->post();
         $images_id = $post['images'];
         $combo_order_number = $post['combo_order_number'];
@@ -111,36 +113,23 @@ class  MemberOrderController extends CommonController
         $images_key = $post['images_key'];
         $rows = [];
         if (empty($combo_order_number) || empty($goods_code) || empty($images_id)) {
-            return $this->render('end', ['msg' => '套系ID，商品Code，图片ID不能为空！']);
+            return Functions::formatJson('1001', '套系ID，商品Code，图片ID不能为空！');
         }
         $orderDetail = MemberOrderDetail::findOne([
             'combo_order_number' => $combo_order_number,
             'goods_code' => $goods_code
         ]);
         if (empty($orderDetail)) {
-            return $this->render('end', ['msg' => '该订单商品不存在！']);
+            return Functions::formatJson('1002', '该订单商品不存在');
         }
         $comboOrder = MemberOrderCombo::findOne(['combo_order_number' => $combo_order_number]);
         if ($orderDetail->goods_category == MemberOrderDetail::CATEGORY_THUMBS) {
             if (count($images_id) > $comboOrder->combo->register_count) {
-                Yii::$app->session->addFlash('combo_select_errors',
-                    '您选择的相册最多只能选' . $comboOrder->combo->register_count . '张图片！');
-                return $this->redirect(Url::to([
-                    'member-order/choose',
-                    'combo_order_number' => $combo_order_number,
-                    'images_key' => $images_key,
-                    'goods_code' => $goods_code
-                ]));
+                return Functions::formatJson('1003', '您选择的相册最多只能选' . $comboOrder->combo->register_count . '张图片！');
             }
         } else {
             if (count($images_id) > 1) {
-                Yii::$app->session->addFlash('combo_select_errors', '您选择的商品最多只能选1张图片！');
-                return $this->redirect(Url::to([
-                    'member-order/choose',
-                    'combo_order_number' => $combo_order_number,
-                    'images_key' => $images_key,
-                    'goods_code' => $goods_code
-                ]));
+                return Functions::formatJson('1003', '您选择的商品最多只能选1张图片！');
             }
         }
         foreach ($images_id as $item) {
@@ -169,10 +158,10 @@ class  MemberOrderController extends CommonController
             }
         } catch (\Exception  $exception) {
             $transaction->rollBack();
-            return $this->render('end', ['msg' => '选片失败' . $exception->getMessage()]);
+            return Functions::formatJson('1005', '选片失败' . $exception->getMessage());
         }
         $transaction->commit();
-        return $this->render('end', ['msg' => '选片成功', 'comboOrder' => $comboOrder]);
+        return Functions::formatJson('1000', '选片成功', ['end' => $comboOrder->allImagesSelected()]);
     }
 
     /**
@@ -225,25 +214,25 @@ class  MemberOrderController extends CommonController
         $this->returnJson();
         $combo_order_number = Yii::$app->request->post('combo_order_number');
         if (empty($combo_order_number)) {
-            return Functions::formatJson(1001,'订单号不能为空');
+            return Functions::formatJson(1001, '订单号不能为空');
         }
         $comboOrder = MemberOrderCombo::findOne([
             'combo_order_number' => $combo_order_number
         ]);
         if (empty($comboOrder)) {
-            return Functions::formatJson(1001,'此订单不存在！');
+            return Functions::formatJson(1001, '此订单不存在！');
         }
 
         $details = $comboOrder->orderDetails;
         if (empty(MemberOrderGoodsImages::findOne(['combo_order_number' => $combo_order_number]))) {
-            return Functions::formatJson(1001,'此订单没有图片');
+            return Functions::formatJson(1001, '此订单没有图片');
         }
         $path = Yii::$app->params['download_path'] . date('Y-m-d') . "/$combo_order_number.zip";
         $filename = Yii::getAlias('@backend-web/' . $path);
         Functions::mkdirs(dirname($filename));
         $zip = new \ZipArchive();
         if ($zip->open($filename, \ZipArchive::CREATE | \ZipArchive::OVERWRITE) !== true) {
-            return Functions::formatJson(1001,'压缩包不存在');
+            return Functions::formatJson(1001, '压缩包不存在');
         }
         foreach ($details as $detail) {
             $images = $detail->images;
@@ -259,7 +248,7 @@ class  MemberOrderController extends CommonController
             }
         }
         if (!file_exists($filename)) {
-            return Functions::formatJson(1001,'压缩包创建失败');
+            return Functions::formatJson(1001, '压缩包创建失败');
         }
         return Functions::formatJson(1000, '', ['uri' => Url::to('/' . $path)]);
     }

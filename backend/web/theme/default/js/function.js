@@ -90,10 +90,10 @@ function ajaxSubmit(url, params, callBackFunc, handleResponseFunc) {
             {
                 callBackFunction  = callBackFunc;
             }
+            layer.msg(data.message,{icon:6,time:2000},callBackFunction);
             if(handleResponseFunc){
                 handleResponseFunc(data);
             }
-            layer.msg(data.message,{icon:6,time:2000},callBackFunction);
         },
         error: function()
         {
